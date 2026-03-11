@@ -2085,14 +2085,12 @@ struct WindowWayland : public Window
 	int floating_width;
 	int floating_height;
 	enum libdecor_window_state window_state;
-	bool configured;
 	struct xdg_surface *xdg_surface;
 	struct xdg_toplevel *xdg_toplevel;
 	char floating_title[256];
 
 	WindowWayland()
 		: frame(NULL)
-		, configured(false)
 		, xdg_surface(NULL)
 		, xdg_toplevel(NULL)
 	{
@@ -2128,13 +2126,6 @@ struct WindowWayland : public Window
 		libdecor_frame_set_app_id(frame, "org.crownengine.CrownRuntime");
 		libdecor_frame_set_title(frame, floating_title);
 		libdecor_frame_map(frame);
-
-		wl_display_roundtrip(_wl->display);
-		wl_display_roundtrip(_wl->display);
-
-		while (!configured) {
-		}
-
 		get_toplevel_objects();
 	}
 
@@ -2360,8 +2351,6 @@ static void handle_configure(libdecor_frame *frame
 		window->floating_width  = width;
 		window->floating_height = height;
 	}
-
-	window->configured = true;
 }
 
 static void handle_close(libdecor_frame *frame, void *user_data)
