@@ -24,6 +24,7 @@ BootConfig::BootConfig(Allocator &a)
 	, window_title(a)
 	, window_w(CROWN_DEFAULT_WINDOW_WIDTH)
 	, window_h(CROWN_DEFAULT_WINDOW_HEIGHT)
+	, device_id(0)
 	, aspect_ratio(-1.0f)
 	, vsync(true)
 	, fullscreen(false)
@@ -91,6 +92,13 @@ bool BootConfig::parse(const char *json)
 			}
 			if (json_object::has(renderer, "aspect_ratio"))
 				aspect_ratio = sjson::parse_float(renderer["aspect_ratio"]);
+			if (json_object::has(renderer, "device_id")) {
+				DynamicString hex(ta);
+				sjson::parse_string(hex, renderer["device_id"]);
+				s64 id;
+				from_hex(id, hex.c_str());
+				device_id = (u16)id;
+			}
 			if (json_object::has(renderer, "vsync"))
 				vsync = sjson::parse_bool(renderer["vsync"]);
 			if (json_object::has(renderer, "fullscreen"))

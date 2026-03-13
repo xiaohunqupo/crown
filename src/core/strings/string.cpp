@@ -6,6 +6,8 @@
 #include "core/error/error.inl"
 #include "core/strings/string.h"
 #include <ctype.h> // tolower
+#include <errno.h>
+#include <stdlib.h>
 
 namespace crown
 {
@@ -72,6 +74,13 @@ int strncasecmp(const char *str1, const char *str2, u32 len)
 	}
 
 	return 0;
+}
+
+int from_hex(s64 &val, const char *hex)
+{
+	errno = 0;
+	val = strtol(hex, NULL, 16);
+	return !(errno != ERANGE && errno != EINVAL);
 }
 
 } // namespace crown

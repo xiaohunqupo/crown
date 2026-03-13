@@ -23,6 +23,7 @@ struct BootConfig
 	DynamicString window_title;
 	u16 window_w;
 	u16 window_h;
+	u16 device_id;
 	float aspect_ratio;
 	bool vsync;
 	bool fullscreen;

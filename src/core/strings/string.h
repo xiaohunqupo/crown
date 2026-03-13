@@ -18,4 +18,7 @@ int wildcmp(const char *wild, const char *str);
 ///
 int strncasecmp(const char *str1, const char *str2, u32 len);
 
+/// Returns 0 if success.
+int from_hex(s64 &val, const char *hex);
+
 } // namespace crown
