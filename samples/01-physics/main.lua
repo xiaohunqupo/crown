@@ -369,8 +369,6 @@ function Game.update(dt)
 			SceneGraph.set_local_position(Game.scene_graph, camera_transform, camera_pos)
 
 			PhysicsWorld.mover_debug_draw(Game.physics_world, mover, Game.mover_debug_line, Color4(210, 210, 210, 255))
-			DebugLine.submit(Game.mover_debug_line)
-			DebugLine.reset(Game.mover_debug_line)
 		else
 			local fp_pos = Game.first_person_camera_local_position:unbox()
 			local camera_pos = Vector3(fp_pos.x, fp_pos.y, fp_pos.z - (Game.mover_crouching and Game.crouch_camera_drop or 0))
@@ -382,6 +380,9 @@ function Game.update(dt)
 
 	local camera_world = Game.camera:world_pose()
 	World.set_listener_pose(GameBase.world, camera_world)
+
+	DebugLine.submit(Game.mover_debug_line)
+	DebugLine.reset(Game.mover_debug_line)
 
 	-- Toggle help.
 	if Keyboard.pressed(Keyboard.button_id("f1"))
