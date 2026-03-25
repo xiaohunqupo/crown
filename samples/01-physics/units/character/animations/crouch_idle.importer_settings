@@ -1,0 +1,10 @@
+create_animations_folder = false
+create_materials_folder = false
+create_textures_folder = false
+import_cameras = false
+import_clips = true
+import_lights = false
+import_materials = false
+import_textures = false
+new_skeleton = false
+target_skeleton = "units/character/character"

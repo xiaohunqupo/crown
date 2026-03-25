@@ -5,6 +5,37 @@ initial_state = "56c1c579-bab7-4362-8d20-af4fd65039d9"
 skeleton_name = "units/character/character"
 states = [
 	{
+		_guid = "03ed304f-9cc5-4fea-a551-d1ac9ebc3da4"
+		_type = "state_machine_node"
+		animations = [
+			{
+				_guid = "33537ac0-15cf-49b3-b243-a4d32f7ee924"
+				_type = "node_animation"
+				name = "units/character/animations/crouch_walk"
+				weight = ""
+			}
+		]
+		loop = true
+		name = "crouch_walk"
+		speed = "speed"
+		transitions = [
+			{
+				_guid = "3061b143-bd3d-4b54-a5f6-302118ca4053"
+				_type = "node_transition"
+				event = "idle"
+				mode = "immediate"
+				to = "ae837669-2c66-46df-8d29-922f730796a7"
+			}
+			{
+				_guid = "6afd7446-1f0e-452f-8d70-d6727de3b361"
+				_type = "node_transition"
+				event = "uncrouch"
+				mode = "immediate"
+				to = "13c340e7-6117-46f2-9a44-710daf8f181b"
+			}
+		]
+	}
+	{
 		_guid = "13c340e7-6117-46f2-9a44-710daf8f181b"
 		_type = "state_machine_node"
 		animations = [
@@ -25,6 +56,13 @@ states = [
 				event = "idle"
 				mode = "immediate"
 				to = "56c1c579-bab7-4362-8d20-af4fd65039d9"
+			}
+			{
+				_guid = "7321987d-7419-49d0-a8e1-7da676d6bc39"
+				_type = "node_transition"
+				event = "crouch"
+				mode = "immediate"
+				to = "03ed304f-9cc5-4fea-a551-d1ac9ebc3da4"
 			}
 			{
 				_guid = "87355f56-a7d2-4267-b581-25de87ba6f66"
@@ -50,6 +88,13 @@ states = [
 		name = "idle"
 		speed = ""
 		transitions = [
+			{
+				_guid = "9a059be2-3bb1-43f3-aef3-d880bd500707"
+				_type = "node_transition"
+				event = "crouch"
+				mode = "immediate"
+				to = "ae837669-2c66-46df-8d29-922f730796a7"
+			}
 			{
 				_guid = "a2e4806c-811f-48e0-8d5c-b3ce0457eba9"
 				_type = "node_transition"
@@ -92,6 +137,37 @@ states = [
 				_guid = "93ee5ecc-7b7a-47b3-b216-9bc3d6e621c8"
 				_type = "node_transition"
 				event = "idle"
+				mode = "immediate"
+				to = "56c1c579-bab7-4362-8d20-af4fd65039d9"
+			}
+		]
+	}
+	{
+		_guid = "ae837669-2c66-46df-8d29-922f730796a7"
+		_type = "state_machine_node"
+		animations = [
+			{
+				_guid = "d9187f2e-eb5a-4589-9ba9-5f978599c8cf"
+				_type = "node_animation"
+				name = "units/character/animations/crouch_idle"
+				weight = ""
+			}
+		]
+		loop = true
+		name = "crouch_idle"
+		speed = ""
+		transitions = [
+			{
+				_guid = "6037422a-831c-4c40-bb00-37d5da5c1a7a"
+				_type = "node_transition"
+				event = "walk"
+				mode = "immediate"
+				to = "03ed304f-9cc5-4fea-a551-d1ac9ebc3da4"
+			}
+			{
+				_guid = "974a9d51-9e8f-4dbc-92f6-b5e65a5cb976"
+				_type = "node_transition"
+				event = "uncrouch"
 				mode = "immediate"
 				to = "56c1c579-bab7-4362-8d20-af4fd65039d9"
 			}

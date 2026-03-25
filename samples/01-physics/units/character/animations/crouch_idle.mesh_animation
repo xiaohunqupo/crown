@@ -1,0 +1,5 @@
+_guid = "b12fb37e-0e84-4531-9425-9c71723f97ef"
+_type = "mesh_animation"
+source = "units/character/animations/crouch_idle.fbx"
+stack_name = "mixamo.com"
+target_skeleton = "units/character/character"

@@ -1,0 +1,5 @@
+_guid = "c369de39-5830-434c-8de2-2aabe7a222f4"
+_type = "mesh_animation"
+source = "units/character/animations/crouch_walk.fbx"
+stack_name = "mixamo.com"
+target_skeleton = "units/character/character"

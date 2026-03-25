@@ -338,6 +338,9 @@ function Game.update(dt)
 			crouch_active = true
 		end
 
+		local asm = World.animation_state_machine(GameBase.world)
+		local animation = AnimationStateMachine.instance(asm, Game.character_unit)
+
 		-- Resize capsule only when crouch state changes.
 		if crouch_active ~= Game.mover_crouching then
 			local current_center = PhysicsWorld.mover_center(Game.physics_world, mover)
@@ -346,9 +349,11 @@ function Game.update(dt)
 			if Game.mover_crouching then
 				PhysicsWorld.mover_set_height(Game.physics_world, mover, Game.mover_crouch_height)
 				PhysicsWorld.mover_set_center(Game.physics_world, mover, Vector3(current_center.x, current_center.y, current_center.z - center_dz))
+				AnimationStateMachine.trigger(asm, animation, "crouch")
 			else
 				PhysicsWorld.mover_set_height(Game.physics_world, mover, Game.mover_stand_height)
 				PhysicsWorld.mover_set_center(Game.physics_world, mover, Vector3(current_center.x, current_center.y, current_center.z + center_dz))
+				AnimationStateMachine.trigger(asm, animation, "uncrouch")
 			end
 		end
 
@@ -372,9 +377,7 @@ function Game.update(dt)
 			SceneGraph.set_local_rotation(Game.scene_graph, character_transform, character_rotation)
 		end
 
-		local asm = World.animation_state_machine(GameBase.world)
 		if asm then
-			local animation = AnimationStateMachine.instance(asm, Game.character_unit)
 			local speed_id  = AnimationStateMachine.variable_id(asm, animation, "speed")
 
 			AnimationStateMachine.set_variable(asm, animation, speed_id, math.min(1.0, move_speed / Game.walk_speed))
