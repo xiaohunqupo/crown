@@ -28,6 +28,7 @@
 #include "core/math/matrix4x4.inl"
 #include "core/math/obb.inl"
 #include "core/math/quaternion.inl"
+#include "core/math/random.inl"
 #include "core/math/sphere.inl"
 #include "core/math/vector2.inl"
 #include "core/math/vector3.inl"
@@ -2272,6 +2273,28 @@ static void test_unit_id()
 	}
 }
 
+static void test_random()
+{
+	{
+		Random rnd((s32)time::now());
+
+		for (u32 i = 0; i < 1000; ++i) {
+			s32 a = rnd.integer();
+			ENSURE(0 <= a && a <= 32767);
+		}
+
+		for (u32 i = 0; i < 1000; ++i) {
+			s32 a = rnd.integer(3465);
+			ENSURE(0 <= a && a < 3465);
+		}
+
+		for (u32 i = 0; i < 1000; ++i) {
+			s32 a = rnd.unit_float();
+			ENSURE(0.0f <= a && a <= 1.0f);
+		}
+	}
+}
+
 #define RUN_TEST(name)      \
 	do {                    \
 		printf(#name "\n"); \
@@ -2313,6 +2336,7 @@ int main_unit_tests()
 	RUN_TEST(test_time);
 	RUN_TEST(test_expression_language);
 	RUN_TEST(test_unit_id);
+	RUN_TEST(test_random);
 
 	return EXIT_SUCCESS;
 }
