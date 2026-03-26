@@ -24,7 +24,7 @@ jobs:
       branch: ${{ steps.detect.outputs.branch }}
     steps:
       - name: prepare
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           ref: ${{ github.ref }}
@@ -68,7 +68,7 @@ jobs:
       BRANCH: ${{ needs.detect.outputs.branch }}
     steps:
       - name: prepare
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           ref: ${{ github.ref }}
