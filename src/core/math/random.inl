@@ -8,13 +8,13 @@
 namespace crown
 {
 inline Random::Random(s32 seed)
-	: _seed(seed)
+	: _seed((u32)seed)
 {
 }
 
 inline s32 Random::integer()
 {
-	_seed = 214013 * _seed + 13737667;
+	_seed = 214013u * _seed + 13737667u;
 	return (_seed >> 16) & 0x7fff;
 }
 

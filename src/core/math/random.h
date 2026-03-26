@@ -14,7 +14,7 @@ namespace crown
 /// Uses LCG algorithm: fast and compatible with the standard C rand().
 struct Random
 {
-	s32 _seed;
+	u32 _seed;
 
 	/// Initializes the generator with the given @a seed.
 	explicit Random(s32 seed);
