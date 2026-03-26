@@ -2289,7 +2289,7 @@ static void test_random()
 		}
 
 		for (u32 i = 0; i < 1000; ++i) {
-			s32 a = rnd.unit_float();
+			f32 a = rnd.unit_float();
 			ENSURE(0.0f <= a && a <= 1.0f);
 		}
 	}
