@@ -10,6 +10,7 @@
 #include "core/platform.h"
 #include "core/strings/dynamic_string.inl"
 #include "core/strings/string_stream.h"
+#include <stdlib.h>   // getenv
 #include <string.h>   // strcmp
 #include <sys/stat.h> // stat, mkdir
 
@@ -25,7 +26,6 @@
 	#include <dlfcn.h>    // dlopen, dlclose, dlsym
 	#include <errno.h>
 	#include <stdio.h>    // fputs, rename
-	#include <stdlib.h>   // getenv
 	#include <string.h>   // memset
 	#include <sys/wait.h> // wait
 	#include <time.h>     // clock_gettime
@@ -248,12 +248,7 @@ namespace os
 
 	const char *getenv(const char *name)
 	{
-#if CROWN_PLATFORM_WINDOWS
-		// GetEnvironmentVariable(name, buf, size);
-		return NULL;
-#else
 		return ::getenv(name);
-#endif
 	}
 
 	s32 setenv(const char *name, const char *value)
