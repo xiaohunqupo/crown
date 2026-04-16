@@ -25,9 +25,9 @@ namespace sjson
 		CE_UNUSED_2(msg, user_data);
 	}
 
-	static thread_local SJsonError _error_function = default_error;
-	static thread_local void *_error_user_data;
-	static thread_local bool _error = false;
+	static CE_THREAD_LOCAL SJsonError _error_function = default_error;
+	static CE_THREAD_LOCAL void *_error_user_data;
+	static CE_THREAD_LOCAL bool _error = false;
 
 	void set_error_callback(SJsonError callback, void *user_data)
 	{
