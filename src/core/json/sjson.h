@@ -15,6 +15,13 @@ namespace crown
 ///
 typedef void (*SJsonError)(const char *msg, void *user_data);
 
+#define RETURN_IF_ERROR(sjson_func) \
+	sjson_func;                     \
+	do {                            \
+		if (sjson::has_error())     \
+			return -1;              \
+	} while (0)
+
 /// Functions to parse SJSON-encoded data.
 ///
 /// @ingroup JSON

@@ -39,4 +39,11 @@ struct RenderConfigResource
 	RenderSettings render_settings;
 };
 
+namespace render_settings
+{
+	///
+	s32 parse(RenderSettings &rs, const char *settings_json);
+
+} // namespace render_settings
+
 } // namespace crown

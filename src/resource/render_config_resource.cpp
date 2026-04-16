@@ -18,8 +18,7 @@ LOG_SYSTEM(RENDER_CONFIG_RESOURCE, "render_config_resource")
 
 namespace crown
 {
-#if CROWN_CAN_COMPILE
-namespace render_config_resource_internal
+namespace
 {
 	u32 msaa_quality_samples(StringId32 quality)
 	{
@@ -37,10 +36,12 @@ namespace render_config_resource_internal
 		return 0;
 	}
 
-	s32 parse_render_settings(RenderSettings &rs, const char *settings_json, CompileOptions &opts)
-	{
-		CE_UNUSED(opts);
+} // namespace
 
+namespace render_settings
+{
+	s32 parse(RenderSettings &rs, const char *settings_json)
+	{
 		TempAllocator1024 ta;
 		JsonObject obj(ta);
 		RETURN_IF_ERROR(sjson::parse(obj, settings_json));
@@ -109,6 +110,11 @@ namespace render_config_resource_internal
 		return 0;
 	}
 
+} // namespace render_settings
+
+#if CROWN_CAN_COMPILE
+namespace render_config_resource_internal
+{
 	s32 parse_shaders(const char *shaders_json, CompileOptions &opts)
 	{
 		TempAllocator1024 ta;
@@ -151,7 +157,7 @@ namespace render_config_resource_internal
 
 		// Parse.
 		if (json_object::has(obj, "render_settings")) {
-			s32 err = parse_render_settings(rcr.render_settings, obj["render_settings"], opts);
+			s32 err = render_settings::parse(rcr.render_settings, obj["render_settings"]);
 			ENSURE_OR_RETURN(err == 0, opts);
 		}
 
