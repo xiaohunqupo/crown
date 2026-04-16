@@ -23,6 +23,12 @@ namespace sjson
 	/// Sets @a callback as error handler. Pass NULL to restore the default handler.
 	void set_error_callback(SJsonError callback, void *user_data);
 
+	/// Clears the error flag on this thread.
+	void clear_error();
+
+	/// Returns whether a parse error occurred on this thread.
+	bool has_error();
+
 	/// Returns the data type of the SJSON string @a json.
 	JsonValueType::Enum type(const char *json);
 

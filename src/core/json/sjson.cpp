@@ -27,6 +27,7 @@ namespace sjson
 
 	static thread_local SJsonError _error_function = default_error;
 	static thread_local void *_error_user_data;
+	static thread_local bool _error = false;
 
 	void set_error_callback(SJsonError callback, void *user_data)
 	{
@@ -34,8 +35,20 @@ namespace sjson
 		_error_user_data = callback ? user_data : NULL;
 	}
 
+	void clear_error()
+	{
+		_error = false;
+	}
+
+	bool has_error()
+	{
+		return _error;
+	}
+
 	void vfatal(const char *format, va_list args)
 	{
+		_error = true;
+
 		char msg[1024];
 		stbsp_vsnprintf(msg, sizeof(msg), format, args);
 		_error_function(msg, _error_user_data);

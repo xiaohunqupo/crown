@@ -38,7 +38,6 @@ struct CompileOptions
 	ResourceId _resource_id;
 	bool _bundle;
 	bool _server;
-	bool _sjson_error;
 
 	///
 	CompileOptions(File &output

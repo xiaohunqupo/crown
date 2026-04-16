@@ -50,7 +50,8 @@
 #define RETURN_IF_ERROR(sjson_func, opts) \
 	sjson_func;                           \
 	do {                                  \
-		if (opts._sjson_error)            \
+		CE_UNUSED(opts);                  \
+		if (sjson::has_error())           \
 			return -1;                    \
 	} while (0)
 

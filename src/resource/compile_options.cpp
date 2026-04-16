@@ -41,7 +41,6 @@ static void sjson_error(const char *msg, void *user_data)
 {
 	CompileOptions *opts = (CompileOptions *)user_data;
 	opts->error("%s", msg);
-	opts->_sjson_error = true;
 }
 
 CompileOptions::CompileOptions(File &output
@@ -70,7 +69,6 @@ CompileOptions::CompileOptions(File &output
 	, _resource_id(res_id)
 	, _bundle(bundle)
 	, _server(_data_compiler._options->_server)
-	, _sjson_error(false)
 {
 	sjson::set_error_callback(sjson_error, this);
 }
