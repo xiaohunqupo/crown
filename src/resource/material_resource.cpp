@@ -220,7 +220,7 @@ namespace material_resource_internal
 	{
 		TempAllocator4096 ta;
 		JsonObject obj(ta);
-		RETURN_IF_ERROR(sjson::parse(obj, json), opts);
+		RETURN_IF_ERROR(sjson::parse(obj, json));
 
 		auto cur = json_object::begin(obj);
 		auto end = json_object::end(obj);
@@ -231,7 +231,7 @@ namespace material_resource_internal
 			const char *value    = cur->second;
 
 			DynamicString texture(ta);
-			RETURN_IF_ERROR(sjson::parse_string(texture, value), opts);
+			RETURN_IF_ERROR(sjson::parse_string(texture, value));
 			RETURN_IF_RESOURCE_MISSING("texture", texture.c_str(), opts);
 			opts.add_requirement("texture", texture.c_str());
 
@@ -245,7 +245,7 @@ namespace material_resource_internal
 	{
 		TempAllocator4096 ta;
 		JsonObject obj(ta);
-		RETURN_IF_ERROR(sjson::parse(obj, json), opts);
+		RETURN_IF_ERROR(sjson::parse(obj, json));
 
 		auto cur = json_object::begin(obj);
 		auto end = json_object::end(obj);
@@ -256,10 +256,10 @@ namespace material_resource_internal
 			const char *value    = cur->second;
 
 			JsonObject uniform(ta);
-			RETURN_IF_ERROR(sjson::parse_object(uniform, value), opts);
+			RETURN_IF_ERROR(sjson::parse_object(uniform, value));
 
 			DynamicString type(ta);
-			RETURN_IF_ERROR(sjson::parse_string(type, uniform["type"]), opts);
+			RETURN_IF_ERROR(sjson::parse_string(type, uniform["type"]));
 
 			const UniformType::Enum ut = name_to_uniform_type(type.c_str());
 			RETURN_IF_FALSE(ut != UniformType::COUNT
@@ -274,12 +274,12 @@ namespace material_resource_internal
 
 			switch (ut) {
 			case UniformType::FLOAT:
-				val.v.x = RETURN_IF_ERROR(sjson::parse_float(uniform["value"]), opts);
+				val.v.x = RETURN_IF_ERROR(sjson::parse_float(uniform["value"]));
 				err = data.check_uniform(key, ut, val, opts);
 				break;
 
 			case UniformType::VECTOR2: {
-				const Vector2 v = RETURN_IF_ERROR(sjson::parse_vector2(uniform["value"]), opts);
+				const Vector2 v = RETURN_IF_ERROR(sjson::parse_vector2(uniform["value"]));
 				val.v.x = v.x;
 				val.v.y = v.y;
 				err = data.check_uniform(key, ut, val, opts);
@@ -287,7 +287,7 @@ namespace material_resource_internal
 			}
 
 			case UniformType::VECTOR3: {
-				const Vector3 v = RETURN_IF_ERROR(sjson::parse_vector3(uniform["value"]), opts);
+				const Vector3 v = RETURN_IF_ERROR(sjson::parse_vector3(uniform["value"]));
 				val.v.x = v.x;
 				val.v.y = v.y;
 				val.v.z = v.z;
@@ -296,12 +296,12 @@ namespace material_resource_internal
 			}
 
 			case UniformType::VECTOR4:
-				val.v = RETURN_IF_ERROR(sjson::parse_vector4(uniform["value"]), opts);
+				val.v = RETURN_IF_ERROR(sjson::parse_vector4(uniform["value"]));
 				err = data.check_uniform(key, ut, val, opts);
 				break;
 
 			case UniformType::MATRIX4X4:
-				val.m = RETURN_IF_ERROR(sjson::parse_matrix4x4(uniform["value"]), opts);
+				val.m = RETURN_IF_ERROR(sjson::parse_matrix4x4(uniform["value"]));
 				err = data.check_uniform(key, ut, val, opts);
 				break;
 
@@ -349,7 +349,7 @@ namespace material_resource_internal
 		Buffer buf = opts.read();
 		TempAllocator4096 ta;
 		JsonObject obj(ta);
-		RETURN_IF_ERROR(sjson::parse(obj, buf), opts);
+		RETURN_IF_ERROR(sjson::parse(obj, buf));
 
 		Data data(default_allocator());
 		Vector<StringView> defines(default_allocator());
@@ -359,7 +359,7 @@ namespace material_resource_internal
 		DynamicString shader_library(ta);
 		DynamicString shader(ta);
 
-		RETURN_IF_ERROR(sjson::parse_string(shader, obj["shader"]), opts);
+		RETURN_IF_ERROR(sjson::parse_string(shader, obj["shader"]));
 		shader_name_defines(shader_name, defines, shader.c_str());
 
 		shader_compiler::compile_variant(shader_fb, &data.uniforms_meta, shader_library, shader_name, defines, opts, true);

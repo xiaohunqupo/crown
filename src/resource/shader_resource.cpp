@@ -1104,15 +1104,15 @@ namespace shader_resource_internal
 		{
 			TempAllocator4096 ta;
 			JsonObject obj(ta);
-			RETURN_IF_ERROR(sjson::parse(obj, buf), _opts);
+			RETURN_IF_ERROR(sjson::parse(obj, buf));
 
 			if (json_object::has(obj, "include")) {
 				JsonArray arr(ta);
-				RETURN_IF_ERROR(sjson::parse_array(arr, obj["include"]), _opts);
+				RETURN_IF_ERROR(sjson::parse_array(arr, obj["include"]));
 
 				for (u32 i = 0; i < array::size(arr); ++i) {
 					DynamicString path(ta);
-					RETURN_IF_ERROR(sjson::parse_string(path, arr[i]), _opts);
+					RETURN_IF_ERROR(sjson::parse_string(path, arr[i]));
 					s32 err = parse(path.c_str(), true);
 					ENSURE_OR_RETURN(err == 0, _opts);
 				}
@@ -1163,38 +1163,38 @@ namespace shader_resource_internal
 
 			if (json_object::has(obj, "rgb_write_enable")) {
 				logw(SHADER_RESOURCE, warn_msg);
-				bool enable = RETURN_IF_ERROR(sjson::parse_bool(obj["rgb_write_enable"]), _opts);
+				bool enable = RETURN_IF_ERROR(sjson::parse_bool(obj["rgb_write_enable"]));
 				state._rgb_write_enable.set_value(enable);
 			}
 
 			if (json_object::has(obj, "alpha_write_enable")) {
 				logw(SHADER_RESOURCE, warn_msg);
-				bool enable = RETURN_IF_ERROR(sjson::parse_bool(obj["alpha_write_enable"]), _opts);
+				bool enable = RETURN_IF_ERROR(sjson::parse_bool(obj["alpha_write_enable"]));
 				state._alpha_write_enable.set_value(enable);
 			}
 
 			if (json_object::has(obj, "depth_write_enable")) {
 				logw(SHADER_RESOURCE, warn_msg);
-				bool enable = RETURN_IF_ERROR(sjson::parse_bool(obj["depth_write_enable"]), _opts);
+				bool enable = RETURN_IF_ERROR(sjson::parse_bool(obj["depth_write_enable"]));
 				state._depth_write_enable.set_value(enable);
 			}
 
 			if (json_object::has(obj, "depth_enable")) {
 				logw(SHADER_RESOURCE, warn_msg);
-				bool enable = RETURN_IF_ERROR(sjson::parse_bool(obj["depth_enable"]), _opts);
+				bool enable = RETURN_IF_ERROR(sjson::parse_bool(obj["depth_enable"]));
 				state._depth_enable.set_value(enable);
 			}
 
 			if (json_object::has(obj, "blend_enable")) {
 				logw(SHADER_RESOURCE, warn_msg);
-				bool enable = RETURN_IF_ERROR(sjson::parse_bool(obj["blend_enable"]), _opts);
+				bool enable = RETURN_IF_ERROR(sjson::parse_bool(obj["blend_enable"]));
 				state._blend_enable.set_value(enable);
 			}
 
 			if (json_object::has(obj, "depth_func")) {
 				logw(SHADER_RESOURCE, warn_msg);
 				DynamicString depth_func(ta);
-				RETURN_IF_ERROR(sjson::parse_string(depth_func, obj["depth_func"]), _opts);
+				RETURN_IF_ERROR(sjson::parse_string(depth_func, obj["depth_func"]));
 				state._depth_func.set_value(name_to_depth_func(depth_func.c_str()));
 				RETURN_IF_FALSE(state._depth_func.value() != DepthFunc::COUNT
 					, _opts
@@ -1206,7 +1206,7 @@ namespace shader_resource_internal
 			if (json_object::has(obj, "blend_src")) {
 				logw(SHADER_RESOURCE, warn_msg);
 				DynamicString blend_src(ta);
-				RETURN_IF_ERROR(sjson::parse_string(blend_src, obj["blend_src"]), _opts);
+				RETURN_IF_ERROR(sjson::parse_string(blend_src, obj["blend_src"]));
 				state._blend_src.set_value(name_to_blend_func(blend_src.c_str()));
 				RETURN_IF_FALSE(state._blend_src.value() != BlendFunc::COUNT
 					, _opts
@@ -1218,7 +1218,7 @@ namespace shader_resource_internal
 			if (json_object::has(obj, "blend_dst")) {
 				logw(SHADER_RESOURCE, warn_msg);
 				DynamicString blend_dst(ta);
-				RETURN_IF_ERROR(sjson::parse_string(blend_dst, obj["blend_dst"]), _opts);
+				RETURN_IF_ERROR(sjson::parse_string(blend_dst, obj["blend_dst"]));
 				state._blend_dst.set_value(name_to_blend_func(blend_dst.c_str()));
 				RETURN_IF_FALSE(state._blend_dst.value() != BlendFunc::COUNT
 					, _opts
@@ -1230,7 +1230,7 @@ namespace shader_resource_internal
 			if (json_object::has(obj, "blend_equation")) {
 				logw(SHADER_RESOURCE, warn_msg);
 				DynamicString blend_equation(ta);
-				RETURN_IF_ERROR(sjson::parse_string(blend_equation, obj["blend_equation"]), _opts);
+				RETURN_IF_ERROR(sjson::parse_string(blend_equation, obj["blend_equation"]));
 				state._blend_equation.set_value(name_to_blend_equation(blend_equation.c_str()));
 				RETURN_IF_FALSE(state._blend_equation.value() != BlendEquation::COUNT
 					, _opts
@@ -1242,7 +1242,7 @@ namespace shader_resource_internal
 			if (json_object::has(obj, "cull_mode")) {
 				logw(SHADER_RESOURCE, warn_msg);
 				DynamicString cull_mode(ta);
-				RETURN_IF_ERROR(sjson::parse_string(cull_mode, obj["cull_mode"]), _opts);
+				RETURN_IF_ERROR(sjson::parse_string(cull_mode, obj["cull_mode"]));
 				state._cull_mode.set_value(name_to_cull_mode(cull_mode.c_str()));
 				RETURN_IF_FALSE(state._cull_mode.value() != CullMode::COUNT
 					, _opts
@@ -1254,7 +1254,7 @@ namespace shader_resource_internal
 			if (json_object::has(obj, "primitive_type")) {
 				logw(SHADER_RESOURCE, warn_msg);
 				DynamicString primitive_type(ta);
-				RETURN_IF_ERROR(sjson::parse_string(primitive_type, obj["primitive_type"]), _opts);
+				RETURN_IF_ERROR(sjson::parse_string(primitive_type, obj["primitive_type"]));
 				state._primitive_type.set_value(name_to_primitive_type(primitive_type.c_str()));
 				RETURN_IF_FALSE(state._primitive_type.value() != PrimitiveType::COUNT
 					, _opts
@@ -1281,7 +1281,7 @@ namespace shader_resource_internal
 
 			TempAllocator4096 ta;
 			JsonObject states(ta);
-			RETURN_IF_ERROR(sjson::parse_object(states, json), _opts);
+			RETURN_IF_ERROR(sjson::parse_object(states, json));
 
 			auto cur = json_object::begin(states);
 			auto end = json_object::end(states);
@@ -1290,23 +1290,23 @@ namespace shader_resource_internal
 
 				// It must be a regular key/value state.
 				if (cur->first == "rgb_write_enable") {
-					bool enable = RETURN_IF_ERROR(sjson::parse_bool(states["rgb_write_enable"]), _opts);
+					bool enable = RETURN_IF_ERROR(sjson::parse_bool(states["rgb_write_enable"]));
 					state._rgb_write_enable.set_value(enable);
 				} else if (cur->first == "alpha_write_enable") {
-					bool enable = RETURN_IF_ERROR(sjson::parse_bool(states["alpha_write_enable"]), _opts);
+					bool enable = RETURN_IF_ERROR(sjson::parse_bool(states["alpha_write_enable"]));
 					state._alpha_write_enable.set_value(enable);
 				} else if (cur->first == "depth_write_enable") {
-					bool enable = RETURN_IF_ERROR(sjson::parse_bool(states["depth_write_enable"]), _opts);
+					bool enable = RETURN_IF_ERROR(sjson::parse_bool(states["depth_write_enable"]));
 					state._depth_write_enable.set_value(enable);
 				} else if (cur->first == "depth_enable") {
-					bool enable = RETURN_IF_ERROR(sjson::parse_bool(states["depth_enable"]), _opts);
+					bool enable = RETURN_IF_ERROR(sjson::parse_bool(states["depth_enable"]));
 					state._depth_enable.set_value(enable);
 				} else if (cur->first == "blend_enable") {
-					bool enable = RETURN_IF_ERROR(sjson::parse_bool(states["blend_enable"]), _opts);
+					bool enable = RETURN_IF_ERROR(sjson::parse_bool(states["blend_enable"]));
 					state._blend_enable.set_value(enable);
 				} else if (cur->first == "depth_func") {
 					DynamicString depth_func(ta);
-					RETURN_IF_ERROR(sjson::parse_string(depth_func, states["depth_func"]), _opts);
+					RETURN_IF_ERROR(sjson::parse_string(depth_func, states["depth_func"]));
 					state._depth_func.set_value(name_to_depth_func(depth_func.c_str()));
 					RETURN_IF_FALSE(state._depth_func.value() != DepthFunc::COUNT
 						, _opts
@@ -1315,7 +1315,7 @@ namespace shader_resource_internal
 						);
 				} else if (cur->first == "blend_src") {
 					DynamicString blend_src(ta);
-					RETURN_IF_ERROR(sjson::parse_string(blend_src, states["blend_src"]), _opts);
+					RETURN_IF_ERROR(sjson::parse_string(blend_src, states["blend_src"]));
 					state._blend_src.set_value(name_to_blend_func(blend_src.c_str()));
 					RETURN_IF_FALSE(state._blend_src.value() != BlendFunc::COUNT
 						, _opts
@@ -1324,7 +1324,7 @@ namespace shader_resource_internal
 						);
 				} else if (cur->first == "blend_dst") {
 					DynamicString blend_dst(ta);
-					RETURN_IF_ERROR(sjson::parse_string(blend_dst, states["blend_dst"]), _opts);
+					RETURN_IF_ERROR(sjson::parse_string(blend_dst, states["blend_dst"]));
 					state._blend_dst.set_value(name_to_blend_func(blend_dst.c_str()));
 					RETURN_IF_FALSE(state._blend_dst.value() != BlendFunc::COUNT
 						, _opts
@@ -1333,7 +1333,7 @@ namespace shader_resource_internal
 						);
 				} else if (cur->first == "blend_equation") {
 					DynamicString blend_equation(ta);
-					RETURN_IF_ERROR(sjson::parse_string(blend_equation, states["blend_equation"]), _opts);
+					RETURN_IF_ERROR(sjson::parse_string(blend_equation, states["blend_equation"]));
 					state._blend_equation.set_value(name_to_blend_equation(blend_equation.c_str()));
 					RETURN_IF_FALSE(state._blend_equation.value() != BlendEquation::COUNT
 						, _opts
@@ -1342,7 +1342,7 @@ namespace shader_resource_internal
 						);
 				} else if (cur->first == "cull_mode") {
 					DynamicString cull_mode(ta);
-					RETURN_IF_ERROR(sjson::parse_string(cull_mode, states["cull_mode"]), _opts);
+					RETURN_IF_ERROR(sjson::parse_string(cull_mode, states["cull_mode"]));
 					state._cull_mode.set_value(name_to_cull_mode(cull_mode.c_str()));
 					RETURN_IF_FALSE(state._cull_mode.value() != CullMode::COUNT
 						, _opts
@@ -1351,7 +1351,7 @@ namespace shader_resource_internal
 						);
 				} else if (cur->first == "primitive_type") {
 					DynamicString primitive_type(ta);
-					RETURN_IF_ERROR(sjson::parse_string(primitive_type, states["primitive_type"]), _opts);
+					RETURN_IF_ERROR(sjson::parse_string(primitive_type, states["primitive_type"]));
 					state._primitive_type.set_value(name_to_primitive_type(primitive_type.c_str()));
 					RETURN_IF_FALSE(state._primitive_type.value() != PrimitiveType::COUNT
 						, _opts
@@ -1359,11 +1359,11 @@ namespace shader_resource_internal
 						, primitive_type.c_str()
 						);
 				} else if (cur->first == "stencil_enable") {
-					bool enable = RETURN_IF_ERROR(sjson::parse_bool(states["stencil_enable"]), _opts);
+					bool enable = RETURN_IF_ERROR(sjson::parse_bool(states["stencil_enable"]));
 					state._stencil_enable.set_value(enable);
 				} else if (cur->first == "stencil_func" || cur->first == "stencil_func_back") {
 					DynamicString func(ta);
-					RETURN_IF_ERROR(sjson::parse_string(func, states[cur->first]), _opts);
+					RETURN_IF_ERROR(sjson::parse_string(func, states[cur->first]));
 					StencilFunc::Enum sf = name_to_stencil_func(func.c_str());
 					RETURN_IF_FALSE(sf != StencilFunc::COUNT
 						, _opts
@@ -1380,7 +1380,7 @@ namespace shader_resource_internal
 					|| cur->first == "stencil_mask_back") {
 					s64 value;
 					DynamicString hexstr(ta);
-					RETURN_IF_ERROR(sjson::parse_string(hexstr, states[cur->first]), _opts);
+					RETURN_IF_ERROR(sjson::parse_string(hexstr, states[cur->first]));
 					int err = from_hex(value, hexstr.c_str());
 					RETURN_IF_FALSE(err == 0
 						, _opts
@@ -1409,7 +1409,7 @@ namespace shader_resource_internal
 					|| cur->first == "stencil_depth_pass"
 					|| cur->first == "stencil_depth_pass_back") {
 					DynamicString op(ta);
-					RETURN_IF_ERROR(sjson::parse_string(op, states[cur->first]), _opts);
+					RETURN_IF_ERROR(sjson::parse_string(op, states[cur->first]));
 					StencilOp::Enum so = name_to_stencil_op(op.c_str());
 					RETURN_IF_FALSE(so != StencilOp::COUNT
 						, _opts
@@ -1459,7 +1459,7 @@ namespace shader_resource_internal
 
 			TempAllocator4096 ta;
 			JsonObject obj(ta);
-			RETURN_IF_ERROR(sjson::parse_object(obj, json), _opts);
+			RETURN_IF_ERROR(sjson::parse_object(obj, json));
 
 			// Read conditional states.
 			auto cur = json_object::begin(obj);
@@ -1497,12 +1497,12 @@ namespace shader_resource_internal
 
 			TempAllocator4096 ta;
 			JsonObject obj(ta);
-			RETURN_IF_ERROR(sjson::parse_object(obj, json), _opts);
+			RETURN_IF_ERROR(sjson::parse_object(obj, json));
 			s32 err = 0;
 
 			// Read inherit render state if any.
 			if (json_object::has(obj, "inherit")) {
-				RETURN_IF_ERROR(sjson::parse_string(rs._inherit, obj["inherit"]), _opts);
+				RETURN_IF_ERROR(sjson::parse_string(rs._inherit, obj["inherit"]));
 			}
 
 			// Read states from render state object itself; for backwards compatibility.
@@ -1528,7 +1528,7 @@ namespace shader_resource_internal
 		{
 			TempAllocator4096 ta;
 			JsonObject render_states(ta);
-			RETURN_IF_ERROR(sjson::parse_object(render_states, json), _opts);
+			RETURN_IF_ERROR(sjson::parse_object(render_states, json));
 
 			auto cur = json_object::begin(render_states);
 			auto end = json_object::end(render_states);
@@ -1536,7 +1536,7 @@ namespace shader_resource_internal
 				JSON_OBJECT_SKIP_HOLE(render_states, cur);
 
 				JsonObject obj(ta);
-				RETURN_IF_ERROR(sjson::parse_object(obj, cur->second), _opts);
+				RETURN_IF_ERROR(sjson::parse_object(obj, cur->second));
 
 				RenderState rs(default_allocator());
 				s32 err = parse_render_state(rs, cur->second);
@@ -1560,7 +1560,7 @@ namespace shader_resource_internal
 		{
 			TempAllocator4096 ta;
 			JsonObject sampler_states(ta);
-			RETURN_IF_ERROR(sjson::parse_object(sampler_states, json), _opts);
+			RETURN_IF_ERROR(sjson::parse_object(sampler_states, json));
 
 			auto cur = json_object::begin(sampler_states);
 			auto end = json_object::end(sampler_states);
@@ -1568,7 +1568,7 @@ namespace shader_resource_internal
 				JSON_OBJECT_SKIP_HOLE(sampler_states, cur);
 
 				JsonObject obj(ta);
-				RETURN_IF_ERROR(sjson::parse_object(obj, cur->second), _opts);
+				RETURN_IF_ERROR(sjson::parse_object(obj, cur->second));
 
 				const bool has_filter_min = json_object::has(obj, "filter_min");
 				const bool has_filter_mag = json_object::has(obj, "filter_mag");
@@ -1586,7 +1586,7 @@ namespace shader_resource_internal
 				DynamicString wrap_w(ta);
 
 				if (has_filter_min) {
-					RETURN_IF_ERROR(sjson::parse_string(filter_min, obj["filter_min"]), _opts);
+					RETURN_IF_ERROR(sjson::parse_string(filter_min, obj["filter_min"]));
 					ss._filter_min = name_to_sampler_filter(filter_min.c_str());
 					RETURN_IF_FALSE(ss._filter_min != SamplerFilter::COUNT
 						, _opts
@@ -1596,7 +1596,7 @@ namespace shader_resource_internal
 				}
 
 				if (has_filter_mag) {
-					RETURN_IF_ERROR(sjson::parse_string(filter_mag, obj["filter_mag"]), _opts);
+					RETURN_IF_ERROR(sjson::parse_string(filter_mag, obj["filter_mag"]));
 					ss._filter_mag = name_to_sampler_filter(filter_mag.c_str());
 					RETURN_IF_FALSE(ss._filter_mag != SamplerFilter::COUNT
 						, _opts
@@ -1606,7 +1606,7 @@ namespace shader_resource_internal
 				}
 
 				if (has_wrap_u) {
-					RETURN_IF_ERROR(sjson::parse_string(wrap_u, obj["wrap_u"]), _opts);
+					RETURN_IF_ERROR(sjson::parse_string(wrap_u, obj["wrap_u"]));
 					ss._wrap_u = name_to_sampler_wrap(wrap_u.c_str());
 					RETURN_IF_FALSE(ss._wrap_u != SamplerWrap::COUNT
 						, _opts
@@ -1616,7 +1616,7 @@ namespace shader_resource_internal
 				}
 
 				if (has_wrap_v) {
-					RETURN_IF_ERROR(sjson::parse_string(wrap_v, obj["wrap_v"]), _opts);
+					RETURN_IF_ERROR(sjson::parse_string(wrap_v, obj["wrap_v"]));
 					ss._wrap_v = name_to_sampler_wrap(wrap_v.c_str());
 					RETURN_IF_FALSE(ss._wrap_v != SamplerWrap::COUNT
 						, _opts
@@ -1626,7 +1626,7 @@ namespace shader_resource_internal
 				}
 
 				if (has_wrap_w) {
-					RETURN_IF_ERROR(sjson::parse_string(wrap_w, obj["wrap_w"]), _opts);
+					RETURN_IF_ERROR(sjson::parse_string(wrap_w, obj["wrap_w"]));
 					ss._wrap_w = name_to_sampler_wrap(wrap_w.c_str());
 					RETURN_IF_FALSE(ss._wrap_w != SamplerWrap::COUNT
 						, _opts
@@ -1653,7 +1653,7 @@ namespace shader_resource_internal
 		{
 			TempAllocator4096 ta;
 			JsonObject bgfx_shaders(ta);
-			RETURN_IF_ERROR(sjson::parse_object(bgfx_shaders, json), _opts);
+			RETURN_IF_ERROR(sjson::parse_object(bgfx_shaders, json));
 
 			auto cur = json_object::begin(bgfx_shaders);
 			auto end = json_object::end(bgfx_shaders);
@@ -1661,7 +1661,7 @@ namespace shader_resource_internal
 				JSON_OBJECT_SKIP_HOLE(bgfx_shaders, cur);
 
 				JsonObject shader(ta);
-				RETURN_IF_ERROR(sjson::parse_object(shader, cur->second), _opts);
+				RETURN_IF_ERROR(sjson::parse_object(shader, cur->second));
 
 				BgfxShader bgfxshader(default_allocator());
 				if (json_object::has(shader, "includes")) {
@@ -1669,22 +1669,22 @@ namespace shader_resource_internal
 					ENSURE_OR_RETURN(err == 0, _opts);
 				}
 				if (json_object::has(shader, "code")) {
-					RETURN_IF_ERROR(sjson::parse_verbatim(bgfxshader._code, shader["code"]), _opts);
+					RETURN_IF_ERROR(sjson::parse_verbatim(bgfxshader._code, shader["code"]));
 				}
 				if (json_object::has(shader, "vs_code")) {
-					RETURN_IF_ERROR(sjson::parse_verbatim(bgfxshader._vs_code, shader["vs_code"]), _opts);
+					RETURN_IF_ERROR(sjson::parse_verbatim(bgfxshader._vs_code, shader["vs_code"]));
 				}
 				if (json_object::has(shader, "fs_code")) {
-					RETURN_IF_ERROR(sjson::parse_verbatim(bgfxshader._fs_code, shader["fs_code"]), _opts);
+					RETURN_IF_ERROR(sjson::parse_verbatim(bgfxshader._fs_code, shader["fs_code"]));
 				}
 				if (json_object::has(shader, "varying")) {
-					RETURN_IF_ERROR(sjson::parse_verbatim(bgfxshader._varying, shader["varying"]), _opts);
+					RETURN_IF_ERROR(sjson::parse_verbatim(bgfxshader._varying, shader["varying"]));
 				}
 				if (json_object::has(shader, "vs_input_output")) {
-					RETURN_IF_ERROR(sjson::parse_verbatim(bgfxshader._vs_input_output, shader["vs_input_output"]), _opts);
+					RETURN_IF_ERROR(sjson::parse_verbatim(bgfxshader._vs_input_output, shader["vs_input_output"]));
 				}
 				if (json_object::has(shader, "fs_input_output")) {
-					RETURN_IF_ERROR(sjson::parse_verbatim(bgfxshader._fs_input_output, shader["fs_input_output"]), _opts);
+					RETURN_IF_ERROR(sjson::parse_verbatim(bgfxshader._fs_input_output, shader["fs_input_output"]));
 				}
 				if (json_object::has(shader, "samplers")) {
 					s32 err = parse_bgfx_samplers(bgfxshader, shader["samplers"]);
@@ -1709,7 +1709,7 @@ namespace shader_resource_internal
 		{
 			TempAllocator4096 ta;
 			JsonObject bgfx_samplers(ta);
-			RETURN_IF_ERROR(sjson::parse_object(bgfx_samplers, json), _opts);
+			RETURN_IF_ERROR(sjson::parse_object(bgfx_samplers, json));
 
 			auto cur = json_object::begin(bgfx_samplers);
 			auto end = json_object::end(bgfx_samplers);
@@ -1717,10 +1717,10 @@ namespace shader_resource_internal
 				JSON_OBJECT_SKIP_HOLE(bgfx_samplers, cur);
 
 				JsonObject sampler(ta);
-				RETURN_IF_ERROR(sjson::parse_object(sampler, cur->second), _opts);
+				RETURN_IF_ERROR(sjson::parse_object(sampler, cur->second));
 
 				DynamicString sampler_state(ta);
-				RETURN_IF_ERROR(sjson::parse_string(sampler_state, sampler["sampler_state"]), _opts);
+				RETURN_IF_ERROR(sjson::parse_string(sampler_state, sampler["sampler_state"]));
 
 				RETURN_IF_FALSE(hash_map::has(_sampler_states, sampler_state)
 					, _opts
@@ -1747,7 +1747,7 @@ namespace shader_resource_internal
 			if (json::type(json) == JsonValueType::STRING) {
 				TempAllocator256 ta;
 				DynamicString inc(ta);
-				RETURN_IF_ERROR(sjson::parse_string(inc, json), _opts);
+				RETURN_IF_ERROR(sjson::parse_string(inc, json));
 				vector::push_back(bgfxshader._includes, inc);
 				logw(SHADER_RESOURCE, "'includes' string format is deprecated. Use array-of-strings format instead.");
 				return 0;
@@ -1755,11 +1755,11 @@ namespace shader_resource_internal
 				TempAllocator1024 ta;
 				JsonArray includes(ta);
 
-				RETURN_IF_ERROR(sjson::parse_array(includes, json), _opts);
+				RETURN_IF_ERROR(sjson::parse_array(includes, json));
 
 				for (u32 i = 0; i < array::size(includes); ++i) {
 					DynamicString inc(ta);
-					RETURN_IF_ERROR(sjson::parse_string(inc, includes[i]), _opts);
+					RETURN_IF_ERROR(sjson::parse_string(inc, includes[i]));
 					vector::push_back(bgfxshader._includes, inc);
 				}
 				return 0;
@@ -1772,7 +1772,7 @@ namespace shader_resource_internal
 		{
 			TempAllocator4096 ta;
 			JsonObject shaders(ta);
-			RETURN_IF_ERROR(sjson::parse_object(shaders, json), _opts);
+			RETURN_IF_ERROR(sjson::parse_object(shaders, json));
 
 			auto cur = json_object::begin(shaders);
 			auto end = json_object::end(shaders);
@@ -1780,11 +1780,11 @@ namespace shader_resource_internal
 				JSON_OBJECT_SKIP_HOLE(shaders, cur);
 
 				JsonObject obj(ta);
-				RETURN_IF_ERROR(sjson::parse_object(obj, cur->second), _opts);
+				RETURN_IF_ERROR(sjson::parse_object(obj, cur->second));
 
 				ShaderPermutation shader(default_allocator());
-				RETURN_IF_ERROR(sjson::parse_string(shader._bgfx_shader, obj["bgfx_shader"]), _opts);
-				RETURN_IF_ERROR(sjson::parse_string(shader._render_state, obj["render_state"]), _opts);
+				RETURN_IF_ERROR(sjson::parse_string(shader._bgfx_shader, obj["bgfx_shader"]));
+				RETURN_IF_ERROR(sjson::parse_string(shader._render_state, obj["render_state"]));
 
 				DynamicString key(ta);
 				key = cur->first;
@@ -1804,20 +1804,20 @@ namespace shader_resource_internal
 		{
 			TempAllocator4096 ta;
 			JsonArray static_compile(ta);
-			RETURN_IF_ERROR(sjson::parse_array(static_compile, json), _opts);
+			RETURN_IF_ERROR(sjson::parse_array(static_compile, json));
 
 			for (u32 ii = 0; ii < array::size(static_compile); ++ii) {
 				JsonObject obj(ta);
-				RETURN_IF_ERROR(sjson::parse_object(obj, static_compile[ii]), _opts);
+				RETURN_IF_ERROR(sjson::parse_object(obj, static_compile[ii]));
 
 				StaticCompile sc(default_allocator());
-				RETURN_IF_ERROR(sjson::parse_string(sc._shader, obj["shader"]), _opts);
+				RETURN_IF_ERROR(sjson::parse_string(sc._shader, obj["shader"]));
 
 				JsonArray defines(ta);
-				RETURN_IF_ERROR(sjson::parse_array(defines, obj["defines"]), _opts);
+				RETURN_IF_ERROR(sjson::parse_array(defines, obj["defines"]));
 				for (u32 jj = 0; jj < array::size(defines); ++jj) {
 					DynamicString def(ta);
-					RETURN_IF_ERROR(sjson::parse_string(def, defines[jj]), _opts);
+					RETURN_IF_ERROR(sjson::parse_string(def, defines[jj]));
 					vector::push_back(sc._defines, def);
 				}
 
@@ -1981,7 +1981,7 @@ namespace shader_resource_internal
 				return 0;
 			}
 
-			RETURN_IF_ERROR(sjson::parse(meta, meta_str.c_str()), opts);
+			RETURN_IF_ERROR(sjson::parse(meta, meta_str.c_str()));
 
 			auto cur = json_object::begin(meta);
 			auto end = json_object::end(meta);
@@ -1992,7 +1992,7 @@ namespace shader_resource_internal
 					if (json::type(cur->second) == JsonValueType::ARRAY) {
 						JsonArray arr(ta);
 
-						RETURN_IF_ERROR(sjson::parse_array(arr, cur->second), opts);
+						RETURN_IF_ERROR(sjson::parse_array(arr, cur->second));
 
 						const u32 val_size = array::size(arr);
 						RETURN_IF_FALSE(val_size <= 4 || val_size == 0
@@ -2001,12 +2001,12 @@ namespace shader_resource_internal
 							);
 
 						for (u32 i = 0; i < array::size(arr); ++i) {
-							*(&um.val.x + i) = RETURN_IF_ERROR(sjson::parse_float(arr[i]), opts);
+							*(&um.val.x + i) = RETURN_IF_ERROR(sjson::parse_float(arr[i]));
 						}
 						const UniformType::Enum map[] = { UniformType::COUNT, UniformType::FLOAT, UniformType::VECTOR2, UniformType::VECTOR3, UniformType::VECTOR4 };
 						um.type = map[val_size];
 					} else if (json::type(cur->second) == JsonValueType::NUMBER) {
-						um.val.x = RETURN_IF_ERROR(sjson::parse_float(cur->second), opts);
+						um.val.x = RETURN_IF_ERROR(sjson::parse_float(cur->second));
 						um.type = UniformType::FLOAT;
 					} else {
 						RETURN_IF_FALSE(false, opts, "'val' must be either an array of numbers or a number");

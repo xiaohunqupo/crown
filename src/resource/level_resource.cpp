@@ -28,19 +28,19 @@ namespace level_resource_internal
 		Buffer buf = opts.read();
 		TempAllocator4096 ta;
 		JsonObject obj(ta);
-		RETURN_IF_ERROR(sjson::parse(obj, buf), opts);
+		RETURN_IF_ERROR(sjson::parse(obj, buf));
 
 		Array<LevelSound> sounds(default_allocator());
 		if (json_object::has(obj, "sounds")) {
 			JsonArray sounds_json(ta);
-			RETURN_IF_ERROR(sjson::parse_array(sounds_json, obj["sounds"]), opts);
+			RETURN_IF_ERROR(sjson::parse_array(sounds_json, obj["sounds"]));
 
 			for (u32 i = 0; i < array::size(sounds_json); ++i) {
 				JsonObject sound(ta);
-				RETURN_IF_ERROR(sjson::parse_object(sound, sounds_json[i]), opts);
+				RETURN_IF_ERROR(sjson::parse_object(sound, sounds_json[i]));
 
 				DynamicString sound_name(ta);
-				RETURN_IF_ERROR(sjson::parse_string(sound_name, sound["name"]), opts);
+				RETURN_IF_ERROR(sjson::parse_string(sound_name, sound["name"]));
 				RETURN_IF_RESOURCE_MISSING("sound"
 					, sound_name.c_str()
 					, opts
@@ -48,14 +48,14 @@ namespace level_resource_internal
 				opts.add_requirement("sound", sound_name.c_str());
 
 				LevelSound ls;
-				ls.name     = RETURN_IF_ERROR(sjson::parse_resource_name(sound["name"]), opts);
-				ls.position = RETURN_IF_ERROR(sjson::parse_vector3      (sound["position"]), opts);
-				ls.volume   = RETURN_IF_ERROR(sjson::parse_float        (sound["volume"]), opts);
-				ls.range    = RETURN_IF_ERROR(sjson::parse_float        (sound["range"]), opts);
-				ls.loop     = RETURN_IF_ERROR(sjson::parse_bool         (sound["loop"]), opts);
+				ls.name     = RETURN_IF_ERROR(sjson::parse_resource_name(sound["name"]));
+				ls.position = RETURN_IF_ERROR(sjson::parse_vector3      (sound["position"]));
+				ls.volume   = RETURN_IF_ERROR(sjson::parse_float        (sound["volume"]));
+				ls.range    = RETURN_IF_ERROR(sjson::parse_float        (sound["range"]));
+				ls.loop     = RETURN_IF_ERROR(sjson::parse_bool         (sound["loop"]));
 				ls.group    = StringId32(0u);
 				if (json_object::has(sound, "group")) {
-					ls.group = RETURN_IF_ERROR(sjson::parse_string_id(sound["group"]), opts);
+					ls.group = RETURN_IF_ERROR(sjson::parse_string_id(sound["group"]));
 				}
 
 				array::push_back(sounds, ls);
@@ -78,13 +78,13 @@ namespace level_resource_internal
 			TempAllocator256 ta;
 			DynamicString skydome_unit_name(ta);
 
-			RETURN_IF_ERROR(sjson::parse_string(skydome_unit_name, obj["skydome_unit"]), opts);
+			RETURN_IF_ERROR(sjson::parse_string(skydome_unit_name, obj["skydome_unit"]));
 			RETURN_IF_RESOURCE_MISSING("unit"
 				, skydome_unit_name.c_str()
 				, opts
 				);
 			opts.add_requirement("unit", skydome_unit_name.c_str());
-			skydome_unit = RETURN_IF_ERROR(sjson::parse_resource_name(obj["skydome_unit"]), opts);
+			skydome_unit = RETURN_IF_ERROR(sjson::parse_resource_name(obj["skydome_unit"]));
 		} else {
 			opts.add_requirement("unit", "core/units/skydome/skydome");
 			skydome_unit = STRING_ID_64("core/units/skydome/skydome", UINT64_C(0x60bc932e8c477ec2));

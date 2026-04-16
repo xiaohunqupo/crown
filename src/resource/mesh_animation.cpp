@@ -140,21 +140,21 @@ namespace mesh_animation
 	{
 		TempAllocator4096 ta;
 		JsonObject obj(ta);
-		RETURN_IF_ERROR(sjson::parse(obj, buf), opts);
+		RETURN_IF_ERROR(sjson::parse(obj, buf));
 
 		// Parse skeleton.
 		DynamicString target_skeleton(ta);
-		RETURN_IF_ERROR(sjson::parse_string(target_skeleton, obj["target_skeleton"]), opts);
+		RETURN_IF_ERROR(sjson::parse_string(target_skeleton, obj["target_skeleton"]));
 		RETURN_IF_RESOURCE_MISSING("mesh_skeleton", target_skeleton.c_str(), opts);
 		opts.add_requirement("mesh_skeleton", target_skeleton.c_str());
-		ma.target_skeleton = RETURN_IF_ERROR(sjson::parse_resource_name(obj["target_skeleton"]), opts);
+		ma.target_skeleton = RETURN_IF_ERROR(sjson::parse_resource_name(obj["target_skeleton"]));
 
 		// Parse animations.
-		RETURN_IF_ERROR(sjson::parse_string(ma.stack_name, obj["stack_name"]), opts);
+		RETURN_IF_ERROR(sjson::parse_string(ma.stack_name, obj["stack_name"]));
 
 		DynamicString source(ta);
 		if (json_object::has(obj, "source")) {
-			RETURN_IF_ERROR(sjson::parse_string(source, obj["source"]), opts);
+			RETURN_IF_ERROR(sjson::parse_string(source, obj["source"]));
 
 			RETURN_IF_FILE_MISSING(source.c_str(), opts);
 			Buffer fbx_buf = opts.read(source.c_str());

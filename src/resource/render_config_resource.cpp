@@ -39,9 +39,11 @@ namespace render_config_resource_internal
 
 	s32 parse_render_settings(RenderSettings &rs, const char *settings_json, CompileOptions &opts)
 	{
+		CE_UNUSED(opts);
+
 		TempAllocator1024 ta;
 		JsonObject obj(ta);
-		RETURN_IF_ERROR(sjson::parse(obj, settings_json), opts);
+		RETURN_IF_ERROR(sjson::parse(obj, settings_json));
 
 		auto cur = json_object::begin(obj);
 		auto end = json_object::end(obj);
@@ -49,52 +51,52 @@ namespace render_config_resource_internal
 			JSON_OBJECT_SKIP_HOLE(obj, cur);
 
 			if (cur->first == "sun_shadow_map_size") {
-				rs.sun_shadow_map_size = RETURN_IF_ERROR(sjson::parse_vector2(cur->second), opts);
+				rs.sun_shadow_map_size = RETURN_IF_ERROR(sjson::parse_vector2(cur->second));
 			} else if (cur->first == "sun_shadows") {
-				bool en = RETURN_IF_ERROR(sjson::parse_bool(cur->second), opts);
+				bool en = RETURN_IF_ERROR(sjson::parse_bool(cur->second));
 				if (en)
 					rs.flags |= RenderSettingsFlags::SUN_SHADOWS;
 				else
 					rs.flags &= ~RenderSettingsFlags::SUN_SHADOWS;
 			} else if (cur->first == "local_lights_shadow_map_size") {
-				rs.local_lights_shadow_map_size = RETURN_IF_ERROR(sjson::parse_vector2(cur->second), opts);
+				rs.local_lights_shadow_map_size = RETURN_IF_ERROR(sjson::parse_vector2(cur->second));
 			} else if (cur->first == "local_lights") {
-				bool en = RETURN_IF_ERROR(sjson::parse_bool(cur->second), opts);
+				bool en = RETURN_IF_ERROR(sjson::parse_bool(cur->second));
 				if (en)
 					rs.flags |= RenderSettingsFlags::LOCAL_LIGHTS;
 				else
 					rs.flags &= ~RenderSettingsFlags::LOCAL_LIGHTS;
 			} else if (cur->first == "local_lights_shadows") {
-				bool en = RETURN_IF_ERROR(sjson::parse_bool(cur->second), opts);
+				bool en = RETURN_IF_ERROR(sjson::parse_bool(cur->second));
 				if (en)
 					rs.flags |= RenderSettingsFlags::LOCAL_LIGHTS_SHADOWS;
 				else
 					rs.flags &= ~RenderSettingsFlags::LOCAL_LIGHTS_SHADOWS;
 			} else if (cur->first == "local_lights_distance_culling") {
-				bool en = RETURN_IF_ERROR(sjson::parse_bool(cur->second), opts);
+				bool en = RETURN_IF_ERROR(sjson::parse_bool(cur->second));
 				if (en)
 					rs.flags |= RenderSettingsFlags::LOCAL_LIGHTS_DISTANCE_CULLING;
 				else
 					rs.flags &= ~RenderSettingsFlags::LOCAL_LIGHTS_DISTANCE_CULLING;
 			} else if (cur->first == "bloom") {
-				bool en = RETURN_IF_ERROR(sjson::parse_bool(cur->second), opts);
+				bool en = RETURN_IF_ERROR(sjson::parse_bool(cur->second));
 				if (en)
 					rs.flags |= RenderSettingsFlags::BLOOM;
 				else
 					rs.flags &= ~RenderSettingsFlags::BLOOM;
 			} else if (cur->first == "msaa") {
-				bool en = RETURN_IF_ERROR(sjson::parse_bool(cur->second), opts);
+				bool en = RETURN_IF_ERROR(sjson::parse_bool(cur->second));
 				if (en)
 					rs.flags |= RenderSettingsFlags::MSAA;
 				else
 					rs.flags &= ~RenderSettingsFlags::MSAA;
 			} else if (cur->first == "msaa_quality") {
-				StringId32 quality = RETURN_IF_ERROR(sjson::parse_string_id(cur->second), opts);
+				StringId32 quality = RETURN_IF_ERROR(sjson::parse_string_id(cur->second));
 				rs.msaa_quality = msaa_quality_samples(quality);
 			} else if (cur->first == "local_lights_distance_culling_fade") {
-				rs.local_lights_distance_culling_fade = RETURN_IF_ERROR(sjson::parse_float(cur->second), opts);
+				rs.local_lights_distance_culling_fade = RETURN_IF_ERROR(sjson::parse_float(cur->second));
 			} else if (cur->first == "local_lights_distance_culling_cutoff") {
-				rs.local_lights_distance_culling_cutoff = RETURN_IF_ERROR(sjson::parse_float(cur->second), opts);
+				rs.local_lights_distance_culling_cutoff = RETURN_IF_ERROR(sjson::parse_float(cur->second));
 			} else {
 				logw(RENDER_CONFIG_RESOURCE
 					, "Unknown render_settings property '%.*s'"
@@ -111,13 +113,13 @@ namespace render_config_resource_internal
 	{
 		TempAllocator1024 ta;
 		JsonArray arr(ta);
-		RETURN_IF_ERROR(sjson::parse_array(arr, shaders_json), opts);
+		RETURN_IF_ERROR(sjson::parse_array(arr, shaders_json));
 
 		for (u32 i = 0; i < array::size(arr); ++i) {
 			TempAllocator512 ta;
 			DynamicString shader_name(ta);
 
-			RETURN_IF_ERROR(sjson::parse_string(shader_name, arr[i]), opts);
+			RETURN_IF_ERROR(sjson::parse_string(shader_name, arr[i]));
 			RETURN_IF_RESOURCE_MISSING("shader", shader_name.c_str(), opts);
 			opts.add_requirement("shader", shader_name.c_str());
 		}
@@ -130,7 +132,7 @@ namespace render_config_resource_internal
 		Buffer buf = opts.read();
 		TempAllocator4096 ta;
 		JsonObject obj(ta);
-		RETURN_IF_ERROR(sjson::parse(obj, buf), opts);
+		RETURN_IF_ERROR(sjson::parse(obj, buf));
 
 		// Init defaults.
 		RenderConfigResource rcr;

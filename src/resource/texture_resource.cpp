@@ -151,11 +151,11 @@ namespace texture_resource_internal
 		if (json_object::has(output, platform)) {
 			TempAllocator1024 ta;
 			JsonObject obj(ta);
-			RETURN_IF_ERROR(sjson::parse_object(obj, output[platform]), opts);
+			RETURN_IF_ERROR(sjson::parse_object(obj, output[platform]));
 
 			DynamicString format(ta);
 			if (json_object::has(obj, "format")) {
-				RETURN_IF_ERROR(sjson::parse_string(format, obj["format"]), opts);
+				RETURN_IF_ERROR(sjson::parse_string(format, obj["format"]));
 				os.format = texture_format_to_enum(format.c_str());
 				RETURN_IF_FALSE(os.format != TextureFormat::COUNT
 					, opts
@@ -164,19 +164,19 @@ namespace texture_resource_internal
 					);
 			}
 			if (json_object::has(obj, "generate_mips")) {
-				os.generate_mips     = RETURN_IF_ERROR(sjson::parse_bool(obj["generate_mips"]), opts);
+				os.generate_mips     = RETURN_IF_ERROR(sjson::parse_bool(obj["generate_mips"]));
 			}
 			if (json_object::has(obj, "mip_skip_smallest")) {
-				os.mip_skip_smallest = RETURN_IF_ERROR(sjson::parse_int (obj["mip_skip_smallest"]), opts);
+				os.mip_skip_smallest = RETURN_IF_ERROR(sjson::parse_int (obj["mip_skip_smallest"]));
 			}
 			if (json_object::has(obj, "normal_map")) {
-				os.normal_map        = RETURN_IF_ERROR(sjson::parse_bool(obj["normal_map"]), opts);
+				os.normal_map        = RETURN_IF_ERROR(sjson::parse_bool(obj["normal_map"]));
 			}
 			if (json_object::has(obj, "linear")) {
-				os.linear = RETURN_IF_ERROR(sjson::parse_bool(obj["linear"]), opts);
+				os.linear = RETURN_IF_ERROR(sjson::parse_bool(obj["linear"]));
 			}
 			if (json_object::has(obj, "premultiply_alpha")) {
-				os.premultiply_alpha = RETURN_IF_ERROR(sjson::parse_bool(obj["premultiply_alpha"]), opts);
+				os.premultiply_alpha = RETURN_IF_ERROR(sjson::parse_bool(obj["premultiply_alpha"]));
 			}
 		}
 
@@ -189,25 +189,25 @@ namespace texture_resource_internal
 
 		TempAllocator4096 ta;
 		JsonObject obj(ta);
-		RETURN_IF_ERROR(sjson::parse(obj, buf), opts);
+		RETURN_IF_ERROR(sjson::parse(obj, buf));
 
 		DynamicString name(ta);
-		RETURN_IF_ERROR(sjson::parse_string(name, obj["source"]), opts);
+		RETURN_IF_ERROR(sjson::parse_string(name, obj["source"]));
 		RETURN_IF_FILE_MISSING(name.c_str(), opts);
 		opts.fake_read(name.c_str());
 
 		OutputSettings os;
 
 		if (json_object::has(obj, "generate_mips")) {
-			os.generate_mips = RETURN_IF_ERROR(sjson::parse_bool(obj["generate_mips"]), opts);
+			os.generate_mips = RETURN_IF_ERROR(sjson::parse_bool(obj["generate_mips"]));
 		}
 		if (json_object::has(obj, "normal_map")) {
-			os.normal_map = RETURN_IF_ERROR(sjson::parse_bool(obj["normal_map"]), opts);
+			os.normal_map = RETURN_IF_ERROR(sjson::parse_bool(obj["normal_map"]));
 		}
 
 		JsonObject output(ta);
 		if (json_object::has(obj, "output")) {
-			RETURN_IF_ERROR(sjson::parse_object(output, obj["output"]), opts);
+			RETURN_IF_ERROR(sjson::parse_object(output, obj["output"]));
 			s32 err = parse_output(os, output, opts);
 			ENSURE_OR_RETURN(err == 0, opts);
 		}

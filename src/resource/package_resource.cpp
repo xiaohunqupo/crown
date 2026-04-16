@@ -101,7 +101,7 @@ namespace package_resource_internal
 		for (u32 i = 0; i < array::size(names); ++i) {
 			TempAllocator256 ta;
 			DynamicString name(ta);
-			RETURN_IF_ERROR(sjson::parse_string(name, names[i]), opts);
+			RETURN_IF_ERROR(sjson::parse_string(name, names[i]));
 			RETURN_IF_RESOURCE_MISSING(type, name.c_str(), opts);
 			name += ".";
 			name += type;
@@ -109,7 +109,7 @@ namespace package_resource_internal
 
 			ResourceOffset ro;
 			ro.type = type_hash;
-			ro.name = RETURN_IF_ERROR(sjson::parse_resource_name(names[i]), opts);
+			ro.name = RETURN_IF_ERROR(sjson::parse_resource_name(names[i]));
 
 			// Bring in requirements
 			u32 graph_level = 0;
@@ -145,46 +145,46 @@ namespace package_resource_internal
 		HashSet<ResourceOffset> resources_set(default_allocator());
 
 		Buffer buf = opts.read();
-		RETURN_IF_ERROR(sjson::parse(obj, buf), opts);
+		RETURN_IF_ERROR(sjson::parse(obj, buf));
 
 		if (json_object::has(obj, "texture")) {
-			RETURN_IF_ERROR(sjson::parse_array(texture, obj["texture"]), opts);
+			RETURN_IF_ERROR(sjson::parse_array(texture, obj["texture"]));
 		}
 		if (json_object::has(obj, "lua")) {
-			RETURN_IF_ERROR(sjson::parse_array(script, obj["lua"]), opts);
+			RETURN_IF_ERROR(sjson::parse_array(script, obj["lua"]));
 		}
 		if (json_object::has(obj, "sound")) {
-			RETURN_IF_ERROR(sjson::parse_array(sound, obj["sound"]), opts);
+			RETURN_IF_ERROR(sjson::parse_array(sound, obj["sound"]));
 		}
 		if (json_object::has(obj, "mesh")) {
-			RETURN_IF_ERROR(sjson::parse_array(mesh, obj["mesh"]), opts);
+			RETURN_IF_ERROR(sjson::parse_array(mesh, obj["mesh"]));
 		}
 		if (json_object::has(obj, "unit")) {
-			RETURN_IF_ERROR(sjson::parse_array(unit, obj["unit"]), opts);
+			RETURN_IF_ERROR(sjson::parse_array(unit, obj["unit"]));
 		}
 		if (json_object::has(obj, "sprite")) {
-			RETURN_IF_ERROR(sjson::parse_array(sprite, obj["sprite"]), opts);
+			RETURN_IF_ERROR(sjson::parse_array(sprite, obj["sprite"]));
 		}
 		if (json_object::has(obj, "material")) {
-			RETURN_IF_ERROR(sjson::parse_array(material, obj["material"]), opts);
+			RETURN_IF_ERROR(sjson::parse_array(material, obj["material"]));
 		}
 		if (json_object::has(obj, "font")) {
-			RETURN_IF_ERROR(sjson::parse_array(font, obj["font"]), opts);
+			RETURN_IF_ERROR(sjson::parse_array(font, obj["font"]));
 		}
 		if (json_object::has(obj, "level")) {
-			RETURN_IF_ERROR(sjson::parse_array(level, obj["level"]), opts);
+			RETURN_IF_ERROR(sjson::parse_array(level, obj["level"]));
 		}
 		if (json_object::has(obj, "physics_config")) {
-			RETURN_IF_ERROR(sjson::parse_array(phyconf, obj["physics_config"]), opts);
+			RETURN_IF_ERROR(sjson::parse_array(phyconf, obj["physics_config"]));
 		}
 		if (json_object::has(obj, "shader")) {
-			RETURN_IF_ERROR(sjson::parse_array(shader, obj["shader"]), opts);
+			RETURN_IF_ERROR(sjson::parse_array(shader, obj["shader"]));
 		}
 		if (json_object::has(obj, "sprite_animation")) {
-			RETURN_IF_ERROR(sjson::parse_array(sprite_animation, obj["sprite_animation"]), opts);
+			RETURN_IF_ERROR(sjson::parse_array(sprite_animation, obj["sprite_animation"]));
 		}
 		if (json_object::has(obj, "render_config")) {
-			RETURN_IF_ERROR(sjson::parse_array(render_config, obj["render_config"]), opts);
+			RETURN_IF_ERROR(sjson::parse_array(render_config, obj["render_config"]));
 		}
 
 		s32 err = 0;

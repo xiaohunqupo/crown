@@ -75,10 +75,10 @@ namespace sound
 	{
 		TempAllocator4096 ta;
 		JsonObject obj(ta);
-		RETURN_IF_ERROR(sjson::parse(obj, buf), opts);
+		RETURN_IF_ERROR(sjson::parse(obj, buf));
 
 		DynamicString source(ta);
-		RETURN_IF_ERROR(sjson::parse_string(source, obj["source"]), opts);
+		RETURN_IF_ERROR(sjson::parse_string(source, obj["source"]));
 		RETURN_IF_FILE_MISSING(source.c_str(), opts);
 		Buffer sound_data = opts.read(source.c_str());
 

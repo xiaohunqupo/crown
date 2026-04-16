@@ -38,18 +38,20 @@ namespace sprite_resource_internal
 
 	s32 parse_frames(Array<SpriteFrame> &sprite_frames, const JsonArray &frames, CompileOptions &opts)
 	{
+		CE_UNUSED(opts);
+
 		for (u32 ii = 0; ii < array::size(frames); ++ii) {
 			TempAllocator512 ta;
 			JsonObject obj(ta);
-			RETURN_IF_ERROR(sjson::parse(obj, frames[ii]), opts);
+			RETURN_IF_ERROR(sjson::parse(obj, frames[ii]));
 
 			SpriteFrame sf;
-			sf.name   = RETURN_IF_ERROR(sjson::parse_string_id(obj["name"]), opts);
-			sf.region = RETURN_IF_ERROR(sjson::parse_vector4(obj["region"]), opts);
-			sf.pivot  = RETURN_IF_ERROR(sjson::parse_vector2(obj["pivot"]), opts);
+			sf.name   = RETURN_IF_ERROR(sjson::parse_string_id(obj["name"]));
+			sf.region = RETURN_IF_ERROR(sjson::parse_vector4(obj["region"]));
+			sf.pivot  = RETURN_IF_ERROR(sjson::parse_vector2(obj["pivot"]));
 
 			if (json_object::has(obj, "index")) {
-				sf.index = RETURN_IF_ERROR(sjson::parse_int(obj["index"]), opts);
+				sf.index = RETURN_IF_ERROR(sjson::parse_int(obj["index"]));
 			} else {
 				sf.index = ii;
 			}
@@ -72,14 +74,14 @@ namespace sprite_resource_internal
 
 		TempAllocator4096 ta;
 		JsonObject obj(ta);
-		RETURN_IF_ERROR(sjson::parse(obj, buf), opts);
+		RETURN_IF_ERROR(sjson::parse(obj, buf));
 
 		JsonArray frames(ta);
-		RETURN_IF_ERROR(sjson::parse_array(frames, obj["frames"]), opts);
+		RETURN_IF_ERROR(sjson::parse_array(frames, obj["frames"]));
 
 		// Read width/height
-		const f32 width      = RETURN_IF_ERROR(sjson::parse_float(obj["width"]), opts);
-		const f32 height     = RETURN_IF_ERROR(sjson::parse_float(obj["height"]), opts);
+		const f32 width      = RETURN_IF_ERROR(sjson::parse_float(obj["width"]));
+		const f32 height     = RETURN_IF_ERROR(sjson::parse_float(obj["height"]));
 		const u32 num_frames = array::size(frames);
 
 		// Parse frames.
@@ -192,25 +194,25 @@ namespace sprite_animation_resource_internal
 		Array<SpriteAnimationFrame> frames(default_allocator());
 		float total_time = 0.0f;
 
-		RETURN_IF_ERROR(sjson::parse(obj, buf), opts);
-		RETURN_IF_ERROR(sjson::parse_array(object_frames, obj["frames"]), opts);
+		RETURN_IF_ERROR(sjson::parse(obj, buf));
+		RETURN_IF_ERROR(sjson::parse_array(object_frames, obj["frames"]));
 
 		array::resize(frames, array::size(object_frames));
 		for (u32 i = 0; i < array::size(object_frames); ++i) {
 			if (sjson::type(object_frames[i]) == JsonValueType::NUMBER) {
-				frames[i].frame = (u32)RETURN_IF_ERROR(sjson::parse_float(object_frames[i]), opts);
+				frames[i].frame = (u32)RETURN_IF_ERROR(sjson::parse_float(object_frames[i]));
 				frames[i].index = i;
 			} else {
 				JsonObject animation_frame_obj(ta);
-				RETURN_IF_ERROR(sjson::parse_object(animation_frame_obj, object_frames[i]), opts);
+				RETURN_IF_ERROR(sjson::parse_object(animation_frame_obj, object_frames[i]));
 
 				if (json_object::has(animation_frame_obj, "frame")) {
-					frames[i].frame = (u32)RETURN_IF_ERROR(sjson::parse_float(animation_frame_obj["frame"]), opts);
+					frames[i].frame = (u32)RETURN_IF_ERROR(sjson::parse_float(animation_frame_obj["frame"]));
 				} else {
 					frames[i].frame = 0; // Crown 0.48 shipped with malformed .sprite_animtion files.
 				}
 
-				frames[i].index = (u32)RETURN_IF_ERROR(sjson::parse_float(animation_frame_obj["index"]), opts);
+				frames[i].index = (u32)RETURN_IF_ERROR(sjson::parse_float(animation_frame_obj["index"]));
 			}
 		}
 
@@ -224,10 +226,10 @@ namespace sprite_animation_resource_internal
 			logw(SPRITE_ANIMATION_RESOURCE, "'total_time' property is deprecated, use 'frames_per_second' instead");
 
 		if (json_object::has(obj, "frames_per_second")) {
-			f32 fps = RETURN_IF_ERROR(sjson::parse_float(obj["frames_per_second"]), opts);
+			f32 fps = RETURN_IF_ERROR(sjson::parse_float(obj["frames_per_second"]));
 			total_time = array::size(frames) / fps;
 		} else {
-			total_time = RETURN_IF_ERROR(sjson::parse_float(obj["total_time"]), opts);
+			total_time = RETURN_IF_ERROR(sjson::parse_float(obj["total_time"]));
 		}
 
 		// Write

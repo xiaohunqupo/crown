@@ -43,7 +43,7 @@ namespace config_resource_internal
 
 		TempAllocator1024 ta;
 		JsonObject boot(ta);
-		RETURN_IF_ERROR(sjson::parse(boot, buf), opts);
+		RETURN_IF_ERROR(sjson::parse(boot, buf));
 
 		const char *boot_script_json  = boot["boot_script"];
 		const char *boot_package_json = boot["boot_package"];
@@ -52,8 +52,8 @@ namespace config_resource_internal
 
 		DynamicString boot_script(ta);
 		DynamicString boot_package(ta);
-		RETURN_IF_ERROR(sjson::parse_string(boot_script, boot_script_json), opts);
-		RETURN_IF_ERROR(sjson::parse_string(boot_package, boot_package_json), opts);
+		RETURN_IF_ERROR(sjson::parse_string(boot_script, boot_script_json));
+		RETURN_IF_ERROR(sjson::parse_string(boot_package, boot_package_json));
 		RETURN_IF_RESOURCE_MISSING("lua", boot_script.c_str(), opts);
 		RETURN_IF_RESOURCE_MISSING("package", boot_package.c_str(), opts);
 
