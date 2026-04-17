@@ -57,6 +57,49 @@ static void parse_physics(PhysicsSettings *settings, const char *json)
 	}
 }
 
+static void parse_renderer_settings(BootConfig *config, const char *json)
+{
+	TempAllocator1024 ta;
+	JsonObject renderer(ta);
+	sjson::parse(renderer, json);
+
+	if (json_object::has(renderer, "resolution")) {
+		JsonArray resolution(ta);
+		sjson::parse_array(resolution, renderer["resolution"]);
+		config->window_w = sjson::parse_int(resolution[0]);
+		config->window_h = sjson::parse_int(resolution[1]);
+	}
+	if (json_object::has(renderer, "aspect_ratio"))
+		config->aspect_ratio = sjson::parse_float(renderer["aspect_ratio"]);
+	if (json_object::has(renderer, "device_id")) {
+		DynamicString hex(ta);
+		sjson::parse_string(hex, renderer["device_id"]);
+		s64 id;
+		from_hex(id, hex.c_str());
+		config->device_id = (u16)id;
+	}
+	if (json_object::has(renderer, "vsync"))
+		config->vsync = sjson::parse_bool(renderer["vsync"]);
+	if (json_object::has(renderer, "fullscreen"))
+		config->fullscreen = sjson::parse_bool(renderer["fullscreen"]);
+}
+
+static void parse_platform_settings(BootConfig *config, const char *json)
+{
+	TempAllocator4096 ta;
+	JsonObject platform(ta);
+	sjson::parse(platform, json);
+
+	if (json_object::has(platform, "save_dir"))
+		sjson::parse_string(config->save_dir, platform["save_dir"]);
+
+	if (json_object::has(platform, "renderer"))
+		parse_renderer_settings(config, platform["renderer"]);
+
+	if (json_object::has(platform, "render_settings"))
+		render_settings::parse(config->render_settings, platform["render_settings"]);
+}
+
 bool BootConfig::parse(const char *json)
 {
 	TempAllocator4096 ta;
@@ -86,41 +129,8 @@ bool BootConfig::parse(const char *json)
 		sjson::parse_string(user_config, cfg["user_config"]);
 
 	// Platform-specific configs.
-	if (json_object::has(cfg, CROWN_PLATFORM_NAME)) {
-		JsonObject platform(ta);
-		sjson::parse(platform, cfg[CROWN_PLATFORM_NAME]);
-
-		if (json_object::has(platform, "save_dir"))
-			sjson::parse_string(save_dir, platform["save_dir"]);
-
-		if (json_object::has(platform, "renderer")) {
-			JsonObject renderer(ta);
-			sjson::parse(renderer, platform["renderer"]);
-
-			if (json_object::has(renderer, "resolution")) {
-				JsonArray resolution(ta);
-				sjson::parse_array(resolution, renderer["resolution"]);
-				window_w = sjson::parse_int(resolution[0]);
-				window_h = sjson::parse_int(resolution[1]);
-			}
-			if (json_object::has(renderer, "aspect_ratio"))
-				aspect_ratio = sjson::parse_float(renderer["aspect_ratio"]);
-			if (json_object::has(renderer, "device_id")) {
-				DynamicString hex(ta);
-				sjson::parse_string(hex, renderer["device_id"]);
-				s64 id;
-				from_hex(id, hex.c_str());
-				device_id = (u16)id;
-			}
-			if (json_object::has(renderer, "vsync"))
-				vsync = sjson::parse_bool(renderer["vsync"]);
-			if (json_object::has(renderer, "fullscreen"))
-				fullscreen = sjson::parse_bool(renderer["fullscreen"]);
-		}
-
-		if (json_object::has(platform, "render_settings"))
-			render_settings::parse(render_settings, platform["render_settings"]);
-	}
+	if (json_object::has(cfg, CROWN_PLATFORM_NAME))
+		parse_platform_settings(this, cfg[CROWN_PLATFORM_NAME]);
 
 	return true;
 }
