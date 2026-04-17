@@ -11,6 +11,7 @@
 #include "core/memory/temp_allocator.inl"
 #include "core/os.h"
 #include "core/strings/dynamic_string.inl"
+#include "core/strings/string_view.inl"
 
 #if CROWN_PLATFORM_WINDOWS
 	#include <tchar.h>
@@ -234,9 +235,14 @@ FilesystemDisk::FilesystemDisk(Allocator &a)
 {
 }
 
+void FilesystemDisk::set_prefix(const StringView &prefix)
+{
+	_prefix = prefix;
+}
+
 void FilesystemDisk::set_prefix(const char *prefix)
 {
-	_prefix.set(prefix, strlen32(prefix));
+	set_prefix(StringView(prefix));
 }
 
 File *FilesystemDisk::open(const char *path, FileOpenMode::Enum mode)

@@ -29,6 +29,9 @@ struct FilesystemDisk : public Filesystem
 	/// Sets the root path to the given @a prefix.
 	/// @note
 	/// The @a prefix must be absolute.
+	void set_prefix(const StringView &prefix);
+
+	/// @copydoc FilesystemDisk::set_prefix()
 	void set_prefix(const char *prefix);
 
 	/// @copydoc Filesystem::open()
