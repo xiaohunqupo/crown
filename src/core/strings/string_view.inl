@@ -7,6 +7,7 @@
 
 #include "core/murmur.h"
 #include "core/strings/string.inl"
+#include "core/strings/string_id.h"
 #include "core/strings/string_view.h"
 
 namespace crown
@@ -44,6 +45,11 @@ inline u32 StringView::length() const
 inline const char *StringView::data() const
 {
 	return _data;
+}
+
+inline StringId32 StringView::to_string_id() const
+{
+	return StringId32(data(), length());
 }
 
 inline bool operator==(const StringView &a, const char *str)

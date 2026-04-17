@@ -34,6 +34,9 @@ struct StringView
 
 	///
 	const char *data() const;
+
+	///
+	StringId32 to_string_id() const;
 };
 
 } // namespace crown
