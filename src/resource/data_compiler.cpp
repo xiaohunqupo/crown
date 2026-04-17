@@ -256,26 +256,6 @@ static void console_command_refresh_list(ConsoleServer &cs, u32 client_id, const
 	cs.send(client_id, string_stream::c_str(ss));
 }
 
-static Buffer read(FilesystemDisk &data_fs, const char *filename)
-{
-	Buffer buffer(default_allocator());
-
-	File *file = data_fs.open(filename, FileOpenMode::READ);
-	if (file->is_open()) {
-		u32 size = file->size();
-		if (size == 0) {
-			data_fs.close(*file);
-			return buffer;
-		}
-
-		array::resize(buffer, size);
-		file->read(array::begin(buffer), size);
-	}
-	data_fs.close(*file);
-
-	return buffer;
-}
-
 static void parse_data_versions(HashMap<StringId64, u32> &versions
 	, Buffer &json
 	)
@@ -302,7 +282,12 @@ static void read_data_versions(HashMap<StringId64, u32> &versions
 	, const char *filename
 	)
 {
-	Buffer json = read(data_fs, filename);
+	Buffer json(default_allocator());
+	File *file = data_fs.open(filename, FileOpenMode::READ);
+	if (file->is_open())
+		file->read_all(json);
+	data_fs.close(*file);
+
 	parse_data_versions(versions, json);
 }
 
@@ -341,7 +326,12 @@ static void read_data_index(HashMap<StringId64, DynamicString> &index
 	, const char *filename
 	)
 {
-	Buffer json = read(data_fs, filename);
+	Buffer json(default_allocator());
+	File *file = data_fs.open(filename, FileOpenMode::READ);
+	if (file->is_open())
+		file->read_all(json);
+	data_fs.close(*file);
+
 	parse_data_index(index, sources, json);
 }
 
@@ -381,7 +371,12 @@ static void read_data_mtimes(HashMap<StringId64, u64> &mtimes
 	, const char *filename
 	)
 {
-	Buffer json = read(data_fs, filename);
+	Buffer json(default_allocator());
+	File *file = data_fs.open(filename, FileOpenMode::READ);
+	if (file->is_open())
+		file->read_all(json);
+	data_fs.close(*file);
+
 	parse_data_mtimes(mtimes, data_index, json);
 }
 
@@ -411,7 +406,11 @@ static void read_data_dependencies(DataCompiler &dc
 	, const char *filename
 	)
 {
-	Buffer json = read(data_fs, filename);
+	Buffer json(default_allocator());
+	File *file = data_fs.open(filename, FileOpenMode::READ);
+	if (file->is_open())
+		file->read_all(json);
+	data_fs.close(*file);
 
 	TempAllocator1024 ta;
 	JsonObject obj(ta);

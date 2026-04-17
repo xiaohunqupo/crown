@@ -113,22 +113,12 @@ bool CompileOptions::resource_exists(const char *type, const char *name)
 	return file_exists(path.c_str());
 }
 
-Buffer CompileOptions::read_all(File *file)
-{
-	const u32 size = file->size();
-	Buffer buf(default_allocator());
-	array::resize(buf, size);
-	if (size != 0)
-		file->read(array::begin(buf), size);
-	return buf;
-}
-
 Buffer CompileOptions::read_temporary(const char *path)
 {
 	Buffer buf(default_allocator());
 	File *file = _output_filesystem.open(path, FileOpenMode::READ);
 	if (file->is_open())
-		buf = read_all(file);
+		file->read_all(buf);
 	_output_filesystem.close(*file);
 	return buf;
 }
@@ -160,7 +150,7 @@ Buffer CompileOptions::read(const char *path)
 	Buffer buf(default_allocator());
 	File *file = source_filesystem.open(path, FileOpenMode::READ);
 	if (file->is_open())
-		buf = read_all(file);
+		file->read_all(buf);
 	source_filesystem.close(*file);
 	return buf;
 }

@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include "core/containers/types.h"
 #include "core/filesystem/types.h"
 #include "core/types.h"
 
@@ -55,6 +56,9 @@ struct File
 
 	/// Reads @a size bytes from this into @a data.
 	virtual u32 read(void *data, u32 size) = 0;
+
+	/// Reads all bytes from this into @a buf.
+	void read_all(Buffer &buf);
 
 	/// Writes @a size bytes from @a data to this.
 	virtual u32 write(const void *data, u32 size) = 0;

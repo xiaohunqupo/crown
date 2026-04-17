@@ -3,10 +3,21 @@
  * SPDX-License-Identifier: MIT
  */
 
+#include "core/containers/array.inl"
 #include "core/filesystem/file.h"
 
 namespace crown
 {
+void File::read_all(Buffer &buf)
+{
+	CE_ASSERT(is_open(), "File is not open");
+
+	const u32 file_size = size();
+	array::resize(buf, file_size);
+	if (file_size != 0)
+		read(array::begin(buf), file_size);
+}
+
 namespace file
 {
 	u32 copy(File &output, File &input, u32 input_size)

@@ -75,9 +75,6 @@ struct CompileOptions
 	bool resource_exists(const char *type, const char *name);
 
 	///
-	Buffer read_all(File *file);
-
-	///
 	Buffer read_temporary(const char *path);
 
 	///
