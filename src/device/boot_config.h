@@ -8,6 +8,7 @@
 #include "core/strings/dynamic_string.h"
 #include "core/strings/string_id.h"
 #include "core/types.h"
+#include "core/value.h"
 #include "world/physics.h"
 
 namespace crown
@@ -29,6 +30,7 @@ struct BootConfig
 	bool vsync;
 	bool fullscreen;
 	PhysicsSettings physics_settings;
+	HashMap<StringId32, Value> render_settings;
 
 	///
 	explicit BootConfig(Allocator &a);

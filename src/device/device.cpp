@@ -341,6 +341,13 @@ static void device_message_refresh(ConsoleServer &cs, u32 client_id, const char 
 	cs.send(client_id, string_stream::c_str(ss));
 }
 
+RenderSettings merged_render_settings(const Device *device)
+{
+	RenderSettings rs = device->_render_config_resource->render_settings;
+	render_settings::write(rs, device->_boot_config.render_settings);
+	return rs;
+}
+
 Device::Device(const DeviceOptions &opts, ConsoleServer &cs)
 	: _allocator(default_allocator(), CROWN_MAX_SUBSYSTEMS_HEAP)
 	, _options(opts)
@@ -755,7 +762,7 @@ int Device::main_loop()
 	_lua_environment->execute_string(_options._lua_string.c_str());
 
 	_pipeline = CE_NEW(_allocator, Pipeline)(*_shader_manager);
-	_pipeline->create(_width, _height, _render_config_resource->render_settings);
+	_pipeline->create(_width, _height, merged_render_settings(this));
 
 	graph_globals::init(_allocator, *_pipeline, *_console_server);
 
@@ -940,7 +947,7 @@ void Device::refresh(const char *json)
 				if (_render_config_resource == old_resource) {
 					_render_config_resource = (RenderConfigResource *)new_resource;
 					_pipeline->destroy();
-					_pipeline->create(_width, _height, _render_config_resource->render_settings);
+					_pipeline->create(_width, _height, merged_render_settings(this));
 				}
 			} else if (resource_type == RESOURCE_TYPE_UNIT) {
 				ListNode *cur;

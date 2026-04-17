@@ -12,6 +12,7 @@
 #include "core/strings/string_id.inl"
 #include "device/boot_config.h"
 #include "device/log.h"
+#include "resource/render_config_resource.h"
 
 LOG_SYSTEM(BOOT_CONFIG, "boot_config")
 
@@ -30,6 +31,7 @@ BootConfig::BootConfig(Allocator &a)
 	, vsync(true)
 	, fullscreen(false)
 	, physics_settings({ 60, 4 })
+	, render_settings(a)
 {
 }
 
@@ -76,6 +78,9 @@ bool BootConfig::parse(const char *json)
 	if (json_object::has(cfg, "physics"))
 		parse_physics(&physics_settings, cfg["physics"]);
 
+	if (json_object::has(cfg, "render_settings"))
+		render_settings::parse(render_settings, cfg["render_settings"]);
+
 	// Platform-specific configs.
 	if (json_object::has(cfg, CROWN_PLATFORM_NAME)) {
 		JsonObject platform(ta);
@@ -108,6 +113,9 @@ bool BootConfig::parse(const char *json)
 			if (json_object::has(renderer, "fullscreen"))
 				fullscreen = sjson::parse_bool(renderer["fullscreen"]);
 		}
+
+		if (json_object::has(platform, "render_settings"))
+			render_settings::parse(render_settings, platform["render_settings"]);
 	}
 
 	return true;
