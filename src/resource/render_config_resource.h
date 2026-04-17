@@ -5,8 +5,10 @@
 
 #pragma once
 
+#include "core/value.h"
 #include "core/math/types.h"
 #include "resource/types.h"
+#include "core/containers/types.h"
 
 namespace crown
 {
@@ -42,7 +44,10 @@ struct RenderConfigResource
 namespace render_settings
 {
 	///
-	s32 parse(RenderSettings &rs, const char *settings_json);
+	s32 parse(HashMap<StringId32, Value> &rs, const char *settings_json);
+
+	///
+	s32 write(RenderSettings &rs, const HashMap<StringId32, Value> &settings_map);
 
 } // namespace render_settings
 

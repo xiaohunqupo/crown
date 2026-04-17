@@ -40,7 +40,7 @@ namespace
 
 namespace render_settings
 {
-	s32 parse(RenderSettings &rs, const char *settings_json)
+	s32 parse(HashMap<StringId32, Value> &rs, const char *settings_json)
 	{
 		TempAllocator1024 ta;
 		JsonObject obj(ta);
@@ -52,57 +52,95 @@ namespace render_settings
 			JSON_OBJECT_SKIP_HOLE(obj, cur);
 
 			if (cur->first == "sun_shadow_map_size") {
-				rs.sun_shadow_map_size = RETURN_IF_ERROR(sjson::parse_vector2(cur->second));
+				Value v; v.type = Value::VECTOR2; v.value.v2 = RETURN_IF_ERROR(sjson::parse_vector2(cur->second));
+				hash_map::set(rs, cur->first.to_string_id(), v);
 			} else if (cur->first == "sun_shadows") {
-				bool en = RETURN_IF_ERROR(sjson::parse_bool(cur->second));
-				if (en)
-					rs.flags |= RenderSettingsFlags::SUN_SHADOWS;
-				else
-					rs.flags &= ~RenderSettingsFlags::SUN_SHADOWS;
+				Value v; v.type = Value::BOOL; v.value.b = RETURN_IF_ERROR(sjson::parse_bool(cur->second));
+				hash_map::set(rs, cur->first.to_string_id(), v);
 			} else if (cur->first == "local_lights_shadow_map_size") {
-				rs.local_lights_shadow_map_size = RETURN_IF_ERROR(sjson::parse_vector2(cur->second));
+				Value v; v.type = Value::VECTOR2; v.value.v2 = RETURN_IF_ERROR(sjson::parse_vector2(cur->second));
+				hash_map::set(rs, cur->first.to_string_id(), v);
 			} else if (cur->first == "local_lights") {
-				bool en = RETURN_IF_ERROR(sjson::parse_bool(cur->second));
-				if (en)
-					rs.flags |= RenderSettingsFlags::LOCAL_LIGHTS;
-				else
-					rs.flags &= ~RenderSettingsFlags::LOCAL_LIGHTS;
+				Value v; v.type = Value::BOOL; v.value.b = RETURN_IF_ERROR(sjson::parse_bool(cur->second));
+				hash_map::set(rs, cur->first.to_string_id(), v);
 			} else if (cur->first == "local_lights_shadows") {
-				bool en = RETURN_IF_ERROR(sjson::parse_bool(cur->second));
-				if (en)
-					rs.flags |= RenderSettingsFlags::LOCAL_LIGHTS_SHADOWS;
-				else
-					rs.flags &= ~RenderSettingsFlags::LOCAL_LIGHTS_SHADOWS;
+				Value v; v.type = Value::BOOL; v.value.b = RETURN_IF_ERROR(sjson::parse_bool(cur->second));
+				hash_map::set(rs, cur->first.to_string_id(), v);
 			} else if (cur->first == "local_lights_distance_culling") {
-				bool en = RETURN_IF_ERROR(sjson::parse_bool(cur->second));
-				if (en)
-					rs.flags |= RenderSettingsFlags::LOCAL_LIGHTS_DISTANCE_CULLING;
-				else
-					rs.flags &= ~RenderSettingsFlags::LOCAL_LIGHTS_DISTANCE_CULLING;
+				Value v; v.type = Value::BOOL; v.value.b = RETURN_IF_ERROR(sjson::parse_bool(cur->second));
+				hash_map::set(rs, cur->first.to_string_id(), v);
 			} else if (cur->first == "bloom") {
-				bool en = RETURN_IF_ERROR(sjson::parse_bool(cur->second));
-				if (en)
-					rs.flags |= RenderSettingsFlags::BLOOM;
-				else
-					rs.flags &= ~RenderSettingsFlags::BLOOM;
+				Value v; v.type = Value::BOOL; v.value.b = RETURN_IF_ERROR(sjson::parse_bool(cur->second));
+				hash_map::set(rs, cur->first.to_string_id(), v);
 			} else if (cur->first == "msaa") {
-				bool en = RETURN_IF_ERROR(sjson::parse_bool(cur->second));
-				if (en)
-					rs.flags |= RenderSettingsFlags::MSAA;
-				else
-					rs.flags &= ~RenderSettingsFlags::MSAA;
+				Value v; v.type = Value::BOOL; v.value.b = RETURN_IF_ERROR(sjson::parse_bool(cur->second));
+				hash_map::set(rs, cur->first.to_string_id(), v);
 			} else if (cur->first == "msaa_quality") {
 				StringId32 quality = RETURN_IF_ERROR(sjson::parse_string_id(cur->second));
-				rs.msaa_quality = msaa_quality_samples(quality);
+				Value v; v.type = Value::UINT32; v.value.u = msaa_quality_samples(quality);
+				hash_map::set(rs, cur->first.to_string_id(), v);
 			} else if (cur->first == "local_lights_distance_culling_fade") {
-				rs.local_lights_distance_culling_fade = RETURN_IF_ERROR(sjson::parse_float(cur->second));
+				Value v; v.type = Value::FLOAT; v.value.f = RETURN_IF_ERROR(sjson::parse_float(cur->second));
+				hash_map::set(rs, cur->first.to_string_id(), v);
 			} else if (cur->first == "local_lights_distance_culling_cutoff") {
-				rs.local_lights_distance_culling_cutoff = RETURN_IF_ERROR(sjson::parse_float(cur->second));
+				Value v; v.type = Value::FLOAT; v.value.f = RETURN_IF_ERROR(sjson::parse_float(cur->second));
+				hash_map::set(rs, cur->first.to_string_id(), v);
 			} else {
 				logw(RENDER_CONFIG_RESOURCE
 					, "Unknown render_settings property '%.*s'"
 					, cur->first.length()
 					, cur->first.data()
+					);
+			}
+		}
+
+		return 0;
+	}
+
+	static void set_flag(u32 &flags, u32 flag, bool enabled)
+	{
+		if (enabled)
+			flags |= flag;
+		else
+			flags &= ~flag;
+	}
+
+	s32 write(RenderSettings &rs, const HashMap<StringId32, Value> &settings_map)
+	{
+		auto cur = hash_map::begin(settings_map);
+		auto end = hash_map::end(settings_map);
+		for (; cur != end; ++cur) {
+			HASH_MAP_SKIP_HOLE(settings_map, cur);
+
+			const StringId32 key = cur->first;
+			const Value &v = cur->second;
+
+			if (key == STRING_ID_32("sun_shadow_map_size", UINT32_C(0x964ee0ab))) {
+				rs.sun_shadow_map_size = v.value.v2;
+			} else if (key == STRING_ID_32("sun_shadows", UINT32_C(0x4ef88b61))) {
+				set_flag(rs.flags, RenderSettingsFlags::SUN_SHADOWS, v.value.b);
+			} else if (key == STRING_ID_32("local_lights_shadow_map_size", UINT32_C(0x28d6b7e9))) {
+				rs.local_lights_shadow_map_size = v.value.v2;
+			} else if (key == STRING_ID_32("local_lights", UINT32_C(0x831fd434))) {
+				set_flag(rs.flags, RenderSettingsFlags::LOCAL_LIGHTS, v.value.b);
+			} else if (key == STRING_ID_32("local_lights_shadows", UINT32_C(0x8b47ea20))) {
+				set_flag(rs.flags, RenderSettingsFlags::LOCAL_LIGHTS_SHADOWS, v.value.b);
+			} else if (key == STRING_ID_32("local_lights_distance_culling", UINT32_C(0x9b7b76bd))) {
+				set_flag(rs.flags, RenderSettingsFlags::LOCAL_LIGHTS_DISTANCE_CULLING, v.value.b);
+			} else if (key == STRING_ID_32("bloom", UINT32_C(0x995dd31c))) {
+				set_flag(rs.flags, RenderSettingsFlags::BLOOM, v.value.b);
+			} else if (key == STRING_ID_32("msaa", UINT32_C(0xaab08183))) {
+				set_flag(rs.flags, RenderSettingsFlags::MSAA, v.value.b);
+			} else if (key == STRING_ID_32("msaa_quality", UINT32_C(0x7464a369))) {
+				rs.msaa_quality = v.value.u;
+			} else if (key == STRING_ID_32("local_lights_distance_culling_fade", UINT32_C(0xc30a11d4))) {
+				rs.local_lights_distance_culling_fade = v.value.f;
+			} else if (key == STRING_ID_32("local_lights_distance_culling_cutoff", UINT32_C(0x8fa8d89a))) {
+				rs.local_lights_distance_culling_cutoff = v.value.f;
+			} else {
+				logw(RENDER_CONFIG_RESOURCE
+					, "Unknown render_settings property 0x%08x"
+					, key._id
 					);
 			}
 		}
@@ -157,7 +195,11 @@ namespace render_config_resource_internal
 
 		// Parse.
 		if (json_object::has(obj, "render_settings")) {
-			s32 err = render_settings::parse(rcr.render_settings, obj["render_settings"]);
+			TempAllocator1024 ta;
+			HashMap<StringId32, Value> render_settings(ta);
+			s32 err = render_settings::parse(render_settings, obj["render_settings"]);
+			ENSURE_OR_RETURN(err == 0, opts);
+			err = render_settings::write(rcr.render_settings, render_settings);
 			ENSURE_OR_RETURN(err == 0, opts);
 		}
 
