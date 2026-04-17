@@ -13,6 +13,7 @@
 #include "core/strings/string_id.h"
 #include "core/types.h"
 #include "device/boot_config.h"
+#include "device/user_config.h"
 #include "device/console_server.h"
 #include "device/delta_time_filter.h"
 #include "device/device_options.h"
@@ -42,6 +43,7 @@ struct Device
 
 	const DeviceOptions &_options;
 	BootConfig _boot_config;
+	UserConfig _user_config;
 	ConsoleServer *_console_server;
 	Filesystem *_data_filesystem;
 	ResourceLoader *_resource_loader;

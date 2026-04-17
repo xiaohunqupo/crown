@@ -23,6 +23,7 @@ struct BootConfig
 	StringId64 render_config_name;
 	DynamicString window_title;
 	DynamicString save_dir;
+	DynamicString user_config;
 	u16 window_w;
 	u16 window_h;
 	u16 device_id;

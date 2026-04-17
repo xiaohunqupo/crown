@@ -345,6 +345,7 @@ RenderSettings merged_render_settings(const Device *device)
 {
 	RenderSettings rs = device->_render_config_resource->render_settings;
 	render_settings::write(rs, device->_boot_config.render_settings);
+	render_settings::write(rs, device->_user_config.render_settings);
 	return rs;
 }
 
@@ -352,6 +353,7 @@ Device::Device(const DeviceOptions &opts, ConsoleServer &cs)
 	: _allocator(default_allocator(), CROWN_MAX_SUBSYSTEMS_HEAP)
 	, _options(opts)
 	, _boot_config(default_allocator())
+	, _user_config(default_allocator())
 	, _console_server(&cs)
 	, _data_filesystem(NULL)
 	, _resource_loader(NULL)
@@ -646,6 +648,27 @@ int Device::main_loop()
 
 		_boot_config.parse((char *)_resource_manager->get(RESOURCE_TYPE_CONFIG, config_name));
 		_resource_manager->unload(RESOURCE_TYPE_CONFIG, config_name);
+	}
+
+	// Read user config if any.
+	if (!_boot_config.user_config.empty()) {
+		TempAllocator256 ta;
+		DynamicString user_config_expanded(ta);
+
+		if (!path::expand(user_config_expanded, _boot_config.user_config.c_str())) {
+			loge(DEVICE, "Unable to expand user_config: '%s'", _boot_config.user_config.c_str());
+		} else {
+			FilesystemDisk fs(default_allocator());
+			fs.set_prefix(path::parent_dir(_boot_config.user_config.c_str()));
+
+			File *file = fs.open(user_config_expanded.c_str(), FileOpenMode::READ);
+			if (!file->is_open()) {
+				loge(DEVICE, "Unable to open user_config: '%s'", user_config_expanded.c_str());
+			} else {
+				_user_config.load(file);
+			}
+			fs.close(*file);
+		}
 	}
 
 	// Init all remaining subsystems

@@ -24,6 +24,7 @@ BootConfig::BootConfig(Allocator &a)
 	, render_config_name(u64(0))
 	, window_title(a)
 	, save_dir(a)
+	, user_config(a)
 	, window_w(CROWN_DEFAULT_WINDOW_WIDTH)
 	, window_h(CROWN_DEFAULT_WINDOW_HEIGHT)
 	, device_id(0)
@@ -80,6 +81,9 @@ bool BootConfig::parse(const char *json)
 
 	if (json_object::has(cfg, "render_settings"))
 		render_settings::parse(render_settings, cfg["render_settings"]);
+
+	if (json_object::has(cfg, "user_config"))
+		sjson::parse_string(user_config, cfg["user_config"]);
 
 	// Platform-specific configs.
 	if (json_object::has(cfg, CROWN_PLATFORM_NAME)) {
