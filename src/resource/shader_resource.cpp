@@ -13,6 +13,7 @@
 #include "core/json/json_object.inl"
 #include "core/json/sjson.h"
 #include "core/math/constants.h"
+#include "core/memory/allocator.h"
 #include "core/memory/temp_allocator.inl"
 #include "core/option.inl"
 #include "core/process.h"
@@ -33,6 +34,18 @@ LOG_SYSTEM(SHADER_RESOURCE, "shader_resource")
 
 namespace crown
 {
+ShaderResource::~ShaderResource()
+{
+	Allocator &a = *_data._allocator;
+
+	for (u32 i = 0; i < array::size(_data); ++i) {
+		for (u32 c = 0; c < _data[i].num_codes; ++c) {
+			a.deallocate(_data[i].codes[c].vs_data);
+			a.deallocate(_data[i].codes[c].fs_data);
+		}
+	}
+}
+
 namespace shader_resource_internal
 {
 	void *load(File &file, Allocator &a)
@@ -76,15 +89,16 @@ namespace shader_resource_internal
 	{
 		const char *platform;
 		const char *profile;
+		ShaderBackend::Enum backend;
 	};
 
 	static const ShadercTarget default_shaderc_target[] =
 	{
-		{ "android", "300_es" }, // Platform::ANDROID
-		{ "android", "300_es" }, // Platform::ANDROID_ARM64
-		{ "asm.js",  "300_es" }, // Platform::HTML5
-		{ "linux",   "spirv"  }, // Platform::LINUX
-		{ "windows", "s_4_0"  }  // Platform::WINDOWS
+		{ "android", "300_es", ShaderBackend::ESSL  }, // Platform::ANDROID
+		{ "android", "300_es", ShaderBackend::ESSL  }, // Platform::ANDROID_ARM64
+		{ "asm.js",  "300_es", ShaderBackend::ESSL  }, // Platform::HTML5
+		{ "linux",   "spirv",  ShaderBackend::SPIRV }, // Platform::LINUX
+		{ "windows", "s_4_0",  ShaderBackend::HLSL  }  // Platform::WINDOWS
 	};
 	CE_STATIC_ASSERT(countof(default_shaderc_target) == Platform::COUNT);
 
@@ -2271,6 +2285,8 @@ namespace shader_resource_internal
 			delete_temp_files();
 
 			// Write
+			bw.write(u32(1));
+			bw.write(u32(target.backend));
 			bw.write(array::size(vs_data));
 			bw.write(vs_data);
 			bw.write(array::size(fs_data));

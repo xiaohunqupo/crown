@@ -39,6 +39,19 @@ struct UniformMetadata
 	Vector4 val;
 };
 
+struct ShaderBackend
+{
+	enum Enum
+	{
+		ESSL,
+		GLSL,
+		HLSL,
+		SPIRV,
+
+		COUNT
+	};
+};
+
 struct ShaderResource
 {
 	explicit ShaderResource(Allocator &a)
@@ -46,10 +59,21 @@ struct ShaderResource
 	{
 	}
 
+	~ShaderResource();
+
 	struct Sampler
 	{
 		u32 name;
 		u32 state;
+	};
+
+	struct Code
+	{
+		u32 backend;
+		u32 vs_size;
+		u8 *vs_data;
+		u32 fs_size;
+		u8 *fs_data;
 	};
 
 	struct Data
@@ -59,8 +83,8 @@ struct ShaderResource
 		u32 stencil_front;
 		u32 stencil_back;
 		Sampler samplers[16];
-		const bgfx::Memory *vsmem;
-		const bgfx::Memory *fsmem;
+		u32 num_codes;
+		Code codes[ShaderBackend::COUNT];
 	};
 
 	Array<Data> _data;

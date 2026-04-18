@@ -78,18 +78,27 @@ void *ShaderManager::load(File &file, Allocator &a)
 			sr->_data[i].samplers[s].state = sampler_state;
 		}
 
-		u32 vs_code_size;
-		br.read(vs_code_size);
-		const bgfx::Memory *vsmem = bgfx::alloc(vs_code_size);
-		br.read(vsmem->data, vs_code_size);
+		u32 num_codes;
+		br.read(num_codes);
+		CE_ENSURE(num_codes > 0 && num_codes <= countof(sr->_data[i].codes));
+		sr->_data[i].num_codes = num_codes;
 
-		u32 fs_code_size;
-		br.read(fs_code_size);
-		const bgfx::Memory *fsmem = bgfx::alloc(fs_code_size);
-		br.read(fsmem->data, fs_code_size);
+		for (u32 c = 0; c < num_codes; ++c) {
+			ShaderResource::Code &code = sr->_data[i].codes[c];
 
-		sr->_data[i].vsmem = vsmem;
-		sr->_data[i].fsmem = fsmem;
+			br.read(code.backend);
+			CE_ENSURE(code.backend < ShaderBackend::COUNT);
+
+			br.read(code.vs_size);
+			CE_ENSURE(code.vs_size > 0);
+			code.vs_data = (u8 *)a.allocate(code.vs_size);
+			br.read(code.vs_data, code.vs_size);
+
+			br.read(code.fs_size);
+			CE_ENSURE(code.fs_size > 0);
+			code.fs_data = (u8 *)a.allocate(code.fs_size);
+			br.read(code.fs_data, code.fs_size);
+		}
 	}
 
 	return sr;
@@ -101,10 +110,11 @@ void ShaderManager::online(StringId64 id, ResourceManager &rm)
 
 	for (u32 i = 0; i < array::size(shader->_data); ++i) {
 		const ShaderResource::Data &data = shader->_data[i];
+		const ShaderResource::Code &code = data.codes[0];
 
-		bgfx::ShaderHandle vs = bgfx::createShader(data.vsmem);
+		bgfx::ShaderHandle vs = bgfx::createShader(bgfx::makeRef(code.vs_data, code.vs_size));
 		CE_ASSERT(bgfx::isValid(vs), "Failed to create vertex shader");
-		bgfx::ShaderHandle fs = bgfx::createShader(data.fsmem);
+		bgfx::ShaderHandle fs = bgfx::createShader(bgfx::makeRef(code.fs_data, code.fs_size));
 		CE_ASSERT(bgfx::isValid(fs), "Failed to create fragment shader");
 		bgfx::ProgramHandle program = bgfx::createProgram(vs, fs, true);
 		CE_ASSERT(bgfx::isValid(program), "Failed to create GPU program");
