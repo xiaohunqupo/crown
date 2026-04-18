@@ -44,6 +44,7 @@ struct Device
 	const DeviceOptions &_options;
 	BootConfig _boot_config;
 	UserConfig _user_config;
+	RendererType::Enum _renderer_type;
 	ConsoleServer *_console_server;
 	Filesystem *_data_filesystem;
 	ResourceLoader *_resource_loader;

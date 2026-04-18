@@ -25,6 +25,7 @@ BootConfig::BootConfig(Allocator &a)
 	, window_title(a)
 	, save_dir(a)
 	, user_config(a)
+	, renderer_type(RendererType::AUTO)
 	, window_w(CROWN_DEFAULT_WINDOW_WIDTH)
 	, window_h(CROWN_DEFAULT_WINDOW_HEIGHT)
 	, device_id(0)
@@ -34,6 +35,22 @@ BootConfig::BootConfig(Allocator &a)
 	, physics_settings({ 60, 4 })
 	, render_settings(a)
 {
+}
+
+RendererType::Enum renderer_type_from_name(const char *name)
+{
+	if (strcmp(name, "auto") == 0)
+		return RendererType::AUTO;
+	else if (strcmp(name, "d3d11") == 0)
+		return RendererType::DIRECT3D11;
+	else if (strcmp(name, "gl") == 0)
+		return RendererType::OPENGL;
+	else if (strcmp(name, "gles") == 0)
+		return RendererType::OPENGLES;
+	else if (strcmp(name, "vk") == 0)
+		return RendererType::VULKAN;
+
+	return RendererType::COUNT;
 }
 
 static void parse_physics(PhysicsSettings *settings, const char *json)
@@ -85,6 +102,17 @@ static void parse_renderer_settings(BootConfig *config, const char *json)
 			s64 id;
 			from_hex(id, hex.c_str());
 			config->device_id = (u16)id;
+		} else if (cur->first == "type") {
+			DynamicString renderer_type(ta);
+			sjson::parse_string(renderer_type, cur->second);
+			config->renderer_type = renderer_type_from_name(renderer_type.c_str());
+			if (config->renderer_type == RendererType::COUNT) {
+				logw(BOOT_CONFIG
+					, "Unknown renderer type '%s'"
+					, renderer_type.c_str()
+					);
+				config->renderer_type = RendererType::AUTO;
+			}
 		} else if (cur->first == "vsync") {
 			config->vsync = sjson::parse_bool(cur->second);
 		} else if (cur->first == "fullscreen") {

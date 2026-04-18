@@ -8,6 +8,7 @@
 #include "core/option.h"
 #include "core/strings/dynamic_string.h"
 #include "core/types.h"
+#include "device/boot_config.h"
 
 namespace crown
 {
@@ -40,6 +41,7 @@ struct DeviceOptions
 	u16 _window_y;
 	Option<u16> _window_width;
 	Option<u16> _window_height;
+	Option<RendererType::Enum> _renderer_type;
 
 	///
 	DeviceOptions(Allocator &a, int argc, const char **argv);

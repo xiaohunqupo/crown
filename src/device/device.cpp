@@ -73,6 +73,31 @@ PlatformData g_platform_data;
 
 extern bool next_event(OsEvent &ev);
 
+static bgfx::RendererType::Enum default_renderer_type()
+{
+#if CROWN_PLATFORM_ANDROID || CROWN_PLATFORM_EMSCRIPTEN
+	return bgfx::RendererType::OpenGLES;
+#elif CROWN_PLATFORM_LINUX
+	return bgfx::RendererType::Count;
+#elif CROWN_PLATFORM_WINDOWS
+	return bgfx::RendererType::Direct3D11;
+#else
+	#error "Unknown platform"
+#endif
+}
+
+static bgfx::RendererType::Enum renderer_type_to_bgfx(RendererType::Enum renderer_type)
+{
+	switch (renderer_type) {
+	case RendererType::AUTO:       return default_renderer_type();
+	case RendererType::DIRECT3D11: return bgfx::RendererType::Direct3D11;
+	case RendererType::OPENGL:     return bgfx::RendererType::OpenGL;
+	case RendererType::OPENGLES:   return bgfx::RendererType::OpenGLES;
+	case RendererType::VULKAN:     return bgfx::RendererType::Vulkan;
+	default:                       return default_renderer_type();
+	}
+}
+
 #define RESOURCE_TYPE(type_name)                            \
 	namespace type_name##_resource_internal                 \
 	{                                                       \
@@ -354,6 +379,7 @@ Device::Device(const DeviceOptions &opts, ConsoleServer &cs)
 	, _options(opts)
 	, _boot_config(default_allocator())
 	, _user_config(default_allocator())
+	, _renderer_type(RendererType::AUTO)
 	, _console_server(&cs)
 	, _data_filesystem(NULL)
 	, _resource_loader(NULL)
@@ -650,6 +676,11 @@ int Device::main_loop()
 		_resource_manager->unload(RESOURCE_TYPE_CONFIG, config_name);
 	}
 
+	_renderer_type = _options._renderer_type.has_changed()
+		? _options._renderer_type.value()
+		: _boot_config.renderer_type
+		;
+
 	// Read user config if any.
 	if (!_boot_config.user_config.empty()) {
 		TempAllocator256 ta;
@@ -707,19 +738,13 @@ int Device::main_loop()
 	init.platformData.type = (bgfx::NativeWindowHandleType::Enum)(uintptr_t)_window->native_handle_type();
 	init.vendorId = BGFX_PCI_ID_NONE;
 	init.deviceId = _boot_config.device_id;
-#if CROWN_PLATFORM_ANDROID || CROWN_PLATFORM_EMSCRIPTEN
-	init.type = bgfx::RendererType::OpenGLES;
-#elif CROWN_PLATFORM_LINUX
-	init.type = bgfx::RendererType::Vulkan;
-#elif CROWN_PLATFORM_WINDOWS
-	init.type = bgfx::RendererType::Direct3D11;
-#else
-	#error "Unknown platform"
-#endif
+	init.type = renderer_type_to_bgfx(_renderer_type);
 
 	bool bgfx_success = bgfx::init(init);
 
-	if (!bgfx_success || bgfx::getCaps()->rendererType != init.type) {
+	if (!bgfx_success
+		|| (init.type != bgfx::RendererType::Count && bgfx::getCaps()->rendererType != init.type)
+		) {
 		loge(DEVICE, "Failed to init rendering subsystem");
 
 		CE_DELETE(_allocator, _resource_manager);

@@ -49,6 +49,12 @@ static void help(const char *msg = NULL)
 		"  --server                        Run the engine in server mode.\n"
 		"  --pumped                        Do not advance the renderer unless explicitly requested via console.\n"
 		"  --hidden                        Make the main window initially invisible.\n"
+		"  --renderer <renderer>           Set the renderer backend.\n"
+		"      auto\n"
+		"      d3d11\n"
+		"      gl\n"
+		"      gles\n"
+		"      vk\n"
 		"  --window-rect <x y w h>         Sets the main window's position and size.\n"
 		"  --string-id <string>            Prints the 32- and 64-bits IDs of <string>.\n"
 		"  --run-unit-tests                Run unit tests and quit.\n"
@@ -85,6 +91,7 @@ DeviceOptions::DeviceOptions(Allocator &a, int argc, const char **argv)
 	, _window_y(0)
 	, _window_width(CROWN_DEFAULT_WINDOW_WIDTH)
 	, _window_height(CROWN_DEFAULT_WINDOW_HEIGHT)
+	, _renderer_type(RendererType::AUTO)
 {
 }
 
@@ -160,6 +167,22 @@ int DeviceOptions::parse(bool *quit)
 
 	_pumped = cl.has_option("pumped");
 	_hidden = cl.has_option("hidden");
+
+	if (cl.has_option("renderer")) {
+		const char *renderer = cl.get_parameter(0, "renderer");
+		if (renderer == NULL) {
+			help("Renderer must be specified.");
+			return EXIT_FAILURE;
+		}
+
+		const RendererType::Enum renderer_type = renderer_type_from_name(renderer);
+		if (renderer_type == RendererType::COUNT) {
+			help("Unknown renderer type.");
+			return EXIT_FAILURE;
+		}
+
+		_renderer_type.set_value(renderer_type);
+	}
 
 	if (!_data_dir.empty()) {
 		if (!path::is_absolute(_data_dir.c_str())) {

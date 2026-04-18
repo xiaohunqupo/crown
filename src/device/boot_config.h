@@ -13,6 +13,23 @@
 
 namespace crown
 {
+struct RendererType
+{
+	enum Enum
+	{
+		AUTO,
+		DIRECT3D11,
+		OPENGL,
+		OPENGLES,
+		VULKAN,
+
+		COUNT
+	};
+};
+
+/// Returns the renderer type named @a name or RendererType::COUNT if invalid.
+RendererType::Enum renderer_type_from_name(const char *name);
+
 /// Boot configuration.
 ///
 /// @ingroup Device
@@ -24,6 +41,7 @@ struct BootConfig
 	DynamicString window_title;
 	DynamicString save_dir;
 	DynamicString user_config;
+	RendererType::Enum renderer_type;
 	u16 window_w;
 	u16 window_h;
 	u16 device_id;
