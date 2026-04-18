@@ -39,6 +39,27 @@ static ShaderData SHADER_DATA_INVALID =
 #endif
 };
 
+static ShaderBackend::Enum renderer_type_to_shader_backend(bgfx::RendererType::Enum renderer_type)
+{
+	switch (renderer_type) {
+	case bgfx::RendererType::Direct3D11: return ShaderBackend::HLSL;
+	case bgfx::RendererType::OpenGL:     return ShaderBackend::GLSL;
+	case bgfx::RendererType::OpenGLES:   return ShaderBackend::ESSL;
+	case bgfx::RendererType::Vulkan:     return ShaderBackend::SPIRV;
+	default:                             return ShaderBackend::COUNT;
+	}
+}
+
+static const ShaderResource::Code *shader_code_for_backend(const ShaderResource::Data &data, ShaderBackend::Enum backend)
+{
+	for (u32 i = 0; i < data.num_codes; ++i) {
+		if (data.codes[i].backend == backend)
+			return &data.codes[i];
+	}
+
+	return NULL;
+}
+
 ShaderManager::ShaderManager(Allocator &a)
 	: _shader_map(a)
 {
@@ -107,14 +128,24 @@ void *ShaderManager::load(File &file, Allocator &a)
 void ShaderManager::online(StringId64 id, ResourceManager &rm)
 {
 	const ShaderResource *shader = (ShaderResource *)rm.get(RESOURCE_TYPE_SHADER, id);
+	const bgfx::RendererType::Enum renderer_type = bgfx::getRendererType();
+	const ShaderBackend::Enum backend = renderer_type_to_shader_backend(renderer_type);
+	if (backend == ShaderBackend::COUNT) {
+		CE_FATAL("Unsupported renderer type: %s", bgfx::getRendererName(renderer_type));
+		return;
+	}
 
 	for (u32 i = 0; i < array::size(shader->_data); ++i) {
 		const ShaderResource::Data &data = shader->_data[i];
-		const ShaderResource::Code &code = data.codes[0];
+		const ShaderResource::Code *code = shader_code_for_backend(data, backend);
+		if (code == NULL) {
+			CE_FATAL("Missing shader code for renderer type: %s", bgfx::getRendererName(renderer_type));
+			continue;
+		}
 
-		bgfx::ShaderHandle vs = bgfx::createShader(bgfx::makeRef(code.vs_data, code.vs_size));
+		bgfx::ShaderHandle vs = bgfx::createShader(bgfx::makeRef(code->vs_data, code->vs_size));
 		CE_ASSERT(bgfx::isValid(vs), "Failed to create vertex shader");
-		bgfx::ShaderHandle fs = bgfx::createShader(bgfx::makeRef(code.fs_data, code.fs_size));
+		bgfx::ShaderHandle fs = bgfx::createShader(bgfx::makeRef(code->fs_data, code->fs_size));
 		CE_ASSERT(bgfx::isValid(fs), "Failed to create fragment shader");
 		bgfx::ProgramHandle program = bgfx::createProgram(vs, fs, true);
 		CE_ASSERT(bgfx::isValid(program), "Failed to create GPU program");
