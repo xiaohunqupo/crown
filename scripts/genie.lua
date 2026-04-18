@@ -35,7 +35,7 @@ newoption {
 
 newoption {
 	trigger = "gfxapi",
-	description = "BGFX renderer (gl32, gles3, d3d11)."
+	description = "BGFX renderer (vulkan-gl32, vulkan, gl32, gles3, d3d11)."
 }
 
 solution "crown"
@@ -69,8 +69,15 @@ dofile (BIMG_DIR .. "scripts/bimg_encode.lua")
 dofile (BIMG_DIR .. "scripts/bimg_decode.lua")
 
 dofile (BGFX_DIR .. "scripts/bgfx.lua")
-if _OPTIONS["gfxapi"] == "vulkan" then
+if _OPTIONS["gfxapi"] == "vulkan-gl32" then
+	bgfxProject("", "StaticLib", {
+		"BGFX_CONFIG_RENDERER_VULKAN=1",
+		"BGFX_CONFIG_RENDERER_OPENGL=32",
+	})
+elseif _OPTIONS["gfxapi"] == "vulkan" then
 	bgfxProject("", "StaticLib", "BGFX_CONFIG_RENDERER_VULKAN=1")
+elseif _OPTIONS["gfxapi"] == "gl32" then
+	bgfxProject("", "StaticLib", "BGFX_CONFIG_RENDERER_OPENGL=32")
 elseif _OPTIONS["gfxapi"] == "gles3" then
 	bgfxProject("", "StaticLib", "BGFX_CONFIG_RENDERER_OPENGLES=30")
 elseif _OPTIONS["gfxapi"] == "d3d11" then
