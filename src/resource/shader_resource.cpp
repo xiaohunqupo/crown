@@ -60,16 +60,6 @@ namespace shader_resource_internal
 #if CROWN_CAN_COMPILE
 namespace shader_resource_internal
 {
-	static const char *shaderc_platform[] =
-	{
-		"android", // Platform::ANDROID
-		"android", // Platform::ANDROID_ARM64
-		"asm.js",  // Platform::HTML5
-		"linux",   // Platform::LINUX
-		"windows"  // Platform::WINDOWS
-	};
-	CE_STATIC_ASSERT(countof(shaderc_platform) == Platform::COUNT);
-
 	static const char *shaderc_paths[] =
 	{
 		EXE_PATH("shaderc"),
@@ -81,6 +71,22 @@ namespace shader_resource_internal
 		EXE_PATH("shaderc-release")
 #endif
 	};
+
+	struct ShadercTarget
+	{
+		const char *platform;
+		const char *profile;
+	};
+
+	static const ShadercTarget default_shaderc_target[] =
+	{
+		{ "android", "300_es" }, // Platform::ANDROID
+		{ "android", "300_es" }, // Platform::ANDROID_ARM64
+		{ "asm.js",  "300_es" }, // Platform::HTML5
+		{ "linux",   "spirv"  }, // Platform::LINUX
+		{ "windows", "s_4_0"  }  // Platform::WINDOWS
+	};
+	CE_STATIC_ASSERT(countof(default_shaderc_target) == Platform::COUNT);
 
 	struct ShadercFlags
 	{
@@ -635,6 +641,7 @@ namespace shader_resource_internal
 
 	static s32 run_shaderc(Process &pr
 		, CompileOptions &opts
+		, const ShadercTarget &target
 		, const char *infile
 		, const char *outfile
 		, const char *varying
@@ -644,7 +651,6 @@ namespace shader_resource_internal
 		)
 	{
 		Array<const char *> argv(default_allocator());
-		const char *platform = shaderc_platform[opts._platform];
 
 		const char *shaderc = opts.exe_path(shaderc_paths, countof(shaderc_paths));
 		RETURN_IF_FALSE(shaderc != NULL, opts, "shaderc not found");
@@ -659,7 +665,7 @@ namespace shader_resource_internal
 		array::push_back(argv, (const char *)"--type");
 		array::push_back(argv, type);
 		array::push_back(argv, (const char *)"--platform");
-		array::push_back(argv, platform);
+		array::push_back(argv, target.platform);
 		if (flags & ShadercFlags::PREPROCESS)
 			array::push_back(argv, (const char *)"--preprocess");
 		if (flags & ShadercFlags::KEEPCOMMENTS)
@@ -674,18 +680,8 @@ namespace shader_resource_internal
 			array::push_back(argv, string_stream::c_str(defines_string));
 		}
 
-		if (strcmp(platform, "android") == 0 || strcmp(platform, "asm.js") == 0) {
-			array::push_back(argv, (const char *)"--profile");
-			array::push_back(argv, (const char *)"300_es"); // GLES
-		} else if (strcmp(platform, "linux") == 0) {
-			array::push_back(argv, (const char *)"--profile");
-			array::push_back(argv, (const char *)"spirv");
-		} else if (strcmp(platform, "windows") == 0) {
-			array::push_back(argv, (const char *)"--profile");
-			array::push_back(argv, (const char *)"s_4_0");
-		} else {
-			return -1;
-		}
+		array::push_back(argv, (const char *)"--profile");
+		array::push_back(argv, target.profile);
 
 		array::push_back(argv, (const char *)NULL);
 		return pr.spawn(array::begin(argv), CROWN_PROCESS_STDOUT_PIPE | CROWN_PROCESS_STDERR_MERGE);
@@ -2108,6 +2104,8 @@ namespace shader_resource_internal
 			_opts.write_temporary(_fs_path.c_str(), fs_code);
 			_opts.write_temporary(_varying_path.c_str(), varying_code);
 
+			const ShadercTarget &target = default_shaderc_target[_opts._platform];
+
 			// Run preprocess pass on shaders.
 			if (meta != NULL) {
 				s32 sc;
@@ -2116,6 +2114,7 @@ namespace shader_resource_internal
 
 				sc = run_shaderc(pr_vert
 					, _opts
+					, target
 					, _vs_path.c_str()
 					, _vs_pp_path.c_str()
 					, _varying_path.c_str()
@@ -2133,6 +2132,7 @@ namespace shader_resource_internal
 
 				sc = run_shaderc(pr_frag
 					, _opts
+					, target
 					, _fs_path.c_str()
 					, _fs_pp_path.c_str()
 					, _varying_path.c_str()
@@ -2202,6 +2202,7 @@ namespace shader_resource_internal
 
 				s32 sc = run_shaderc(pr_vert
 					, _opts
+					, target
 					, _vs_path.c_str()
 					, _vs_bin_path.c_str()
 					, _varying_path.c_str()
@@ -2218,6 +2219,7 @@ namespace shader_resource_internal
 
 				sc = run_shaderc(pr_frag
 					, _opts
+					, target
 					, _fs_path.c_str()
 					, _fs_bin_path.c_str()
 					, _varying_path.c_str()
