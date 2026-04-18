@@ -102,6 +102,27 @@ namespace shader_resource_internal
 	};
 	CE_STATIC_ASSERT(countof(default_shaderc_target) == Platform::COUNT);
 
+	static const ShadercTarget linux_shaderc_targets[] =
+	{
+		{ "linux", "spirv", ShaderBackend::SPIRV },
+		{ "linux", "150",   ShaderBackend::GLSL  }
+	};
+	CE_STATIC_ASSERT(countof(linux_shaderc_targets) <= ShaderBackend::COUNT);
+
+	struct ShadercTargetList
+	{
+		const ShadercTarget *targets;
+		u32 count;
+	};
+
+	static ShadercTargetList shaderc_targets(Platform::Enum platform)
+	{
+		if (platform == Platform::LINUX)
+			return { linux_shaderc_targets, countof(linux_shaderc_targets) };
+
+		return { &default_shaderc_target[platform], 1 };
+	}
+
 	struct ShadercFlags
 	{
 		enum Enum
@@ -2118,7 +2139,7 @@ namespace shader_resource_internal
 			_opts.write_temporary(_fs_path.c_str(), fs_code);
 			_opts.write_temporary(_varying_path.c_str(), varying_code);
 
-			const ShadercTarget &target = default_shaderc_target[_opts._platform];
+			const ShadercTarget &metadata_target = default_shaderc_target[_opts._platform];
 
 			// Run preprocess pass on shaders.
 			if (meta != NULL) {
@@ -2128,7 +2149,7 @@ namespace shader_resource_internal
 
 				sc = run_shaderc(pr_vert
 					, _opts
-					, target
+					, metadata_target
 					, _vs_path.c_str()
 					, _vs_pp_path.c_str()
 					, _varying_path.c_str()
@@ -2146,7 +2167,7 @@ namespace shader_resource_internal
 
 				sc = run_shaderc(pr_frag
 					, _opts
-					, target
+					, metadata_target
 					, _fs_path.c_str()
 					, _fs_pp_path.c_str()
 					, _varying_path.c_str()
@@ -2206,11 +2227,17 @@ namespace shader_resource_internal
 				ENSURE_OR_RETURN(err == 0, _opts);
 			}
 
-			if (metadata_only)
+			if (metadata_only) {
+				delete_temp_files();
 				return 0;
+			}
 
 			// Compile shader binaries.
-			{
+			const ShadercTargetList targets = shaderc_targets(_opts._platform);
+			bw.write(targets.count);
+
+			for (u32 ti = 0; ti < targets.count; ++ti) {
+				const ShadercTarget &target = targets.targets[ti];
 				Process pr_vert;
 				Process pr_frag;
 
@@ -2261,8 +2288,10 @@ namespace shader_resource_internal
 					delete_temp_files();
 					RETURN_IF_FALSE(false
 						, _opts
-						, "Failed to compile vertex shader `%s`:\n%s"
+						, "Failed to compile vertex shader `%s` for %s/%s:\n%s"
 						, bgfx_shader
+						, target.platform
+						, target.profile
 						, string_stream::c_str(output_vert)
 						);
 				}
@@ -2273,24 +2302,25 @@ namespace shader_resource_internal
 					delete_temp_files();
 					RETURN_IF_FALSE(false
 						, _opts
-						, "Failed to compile fragment shader `%s`:\n%s"
+						, "Failed to compile fragment shader `%s` for %s/%s:\n%s"
 						, bgfx_shader
+						, target.platform
+						, target.profile
 						, string_stream::c_str(output_frag)
 						);
 				}
+
+				Buffer vs_data = _opts.read_temporary(_vs_bin_path.c_str());
+				Buffer fs_data = _opts.read_temporary(_fs_bin_path.c_str());
+
+				bw.write(u32(target.backend));
+				bw.write(array::size(vs_data));
+				bw.write(vs_data);
+				bw.write(array::size(fs_data));
+				bw.write(fs_data);
 			}
 
-			Buffer vs_data = _opts.read_temporary(_vs_bin_path.c_str());
-			Buffer fs_data = _opts.read_temporary(_fs_bin_path.c_str());
 			delete_temp_files();
-
-			// Write
-			bw.write(u32(1));
-			bw.write(u32(target.backend));
-			bw.write(array::size(vs_data));
-			bw.write(vs_data);
-			bw.write(array::size(fs_data));
-			bw.write(fs_data);
 
 			return 0;
 		}
