@@ -1224,11 +1224,10 @@ void RenderWorld::render(const Matrix4x4 &view, const Matrix4x4 &proj, const Mat
 				CE_STATIC_ASSERT(countof(rects) == MAX_NUM_CASCADES);
 
 				lid.shader[L].atlas_u.x = 0.0f;
-#if CROWN_PLATFORM_WINDOWS || CROWN_PLATFORM_LINUX
-				lid.shader[L].atlas_v.x = rects[0].y / _pipeline->_render_settings.sun_shadow_map_size.y;
-#else
-				lid.shader[L].atlas_v.x = 1.0f - ((rects[0].y + rects[0].w) / _pipeline->_render_settings.sun_shadow_map_size.y);
-#endif
+				lid.shader[L].atlas_v.x = caps->originBottomLeft
+					? 1.0f - ((rects[0].y + rects[0].w) / _pipeline->_render_settings.sun_shadow_map_size.y)
+					: rects[0].y / _pipeline->_render_settings.sun_shadow_map_size.y
+					;
 				lid.shader[L].map_size = 0.5f;
 
 				bgfx::setViewRect(View::CASCADE_0 + i
@@ -1323,11 +1322,10 @@ void RenderWorld::render(const Matrix4x4 &view, const Matrix4x4 &proj, const Mat
 					};
 
 					shader.atlas_u.x = rect.x / _pipeline->_render_settings.local_lights_shadow_map_size.x;
-#if CROWN_PLATFORM_WINDOWS || CROWN_PLATFORM_LINUX
-					shader.atlas_v.x = rect.y / _pipeline->_render_settings.local_lights_shadow_map_size.x;
-#else
-					shader.atlas_v.x = 1.0f - ((rect.y + rect.z) / _pipeline->_render_settings.local_lights_shadow_map_size.x);
-#endif
+					shader.atlas_v.x = caps->originBottomLeft
+						? 1.0f - ((rect.y + rect.w) / _pipeline->_render_settings.local_lights_shadow_map_size.x)
+						: rect.y / _pipeline->_render_settings.local_lights_shadow_map_size.x
+						;
 					shader.map_size = rect.w / _pipeline->_render_settings.local_lights_shadow_map_size.x;
 
 					bgfx::setViewFrameBuffer(sm_local_view_id, _pipeline->_local_lights_shadow_map_frame_buffer);
@@ -1441,11 +1439,10 @@ void RenderWorld::render(const Matrix4x4 &view, const Matrix4x4 &proj, const Mat
 						};
 
 						*(&shader.atlas_u.x + side) = rect.x / _pipeline->_render_settings.local_lights_shadow_map_size.x;
-#if CROWN_PLATFORM_WINDOWS || CROWN_PLATFORM_LINUX
-						*(&shader.atlas_v.x + side) = rect.y / _pipeline->_render_settings.local_lights_shadow_map_size.x;
-#else
-						*(&shader.atlas_v.x + side) = 1.0f - ((rect.y + rect.w) / _pipeline->_render_settings.local_lights_shadow_map_size.x);
-#endif
+						*(&shader.atlas_v.x + side) = caps->originBottomLeft
+							? 1.0f - ((rect.y + rect.w) / _pipeline->_render_settings.local_lights_shadow_map_size.x)
+							: rect.y / _pipeline->_render_settings.local_lights_shadow_map_size.x
+							;
 						shader.map_size = rect.w / _pipeline->_render_settings.local_lights_shadow_map_size.x;
 
 						bgfx::setViewFrameBuffer(sm_local_view_id, _pipeline->_local_lights_shadow_map_frame_buffer);
