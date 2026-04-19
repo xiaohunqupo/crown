@@ -355,16 +355,16 @@ samples: 00-empty 01-physics 02-animation 03-joypad
 
 .PHONY: run-00-empty
 run-00-empty: 00-empty
-	cd build/$(SAMPLES_OS)64/bin && $(EXE_PREFIX)crown-development$(EXE_SUFFIX) --data-dir $(realpath samples/$<_$(SAMPLES_PLATFORM))
+	cd build/$(SAMPLES_OS)64/bin && $(EXE_PREFIX)crown-development$(EXE_SUFFIX) --data-dir $(realpath samples/$<_$(SAMPLES_PLATFORM)) $(RUN_ARGS)
 .PHONY: run-01-physics
 run-01-physics: 01-physics
-	cd build/$(SAMPLES_OS)64/bin && $(EXE_PREFIX)crown-development$(EXE_SUFFIX) --data-dir $(realpath samples/$<_$(SAMPLES_PLATFORM))
+	cd build/$(SAMPLES_OS)64/bin && $(EXE_PREFIX)crown-development$(EXE_SUFFIX) --data-dir $(realpath samples/$<_$(SAMPLES_PLATFORM)) $(RUN_ARGS)
 .PHONY: run-02-animation
 run-02-animation: 02-animation
-	cd build/$(SAMPLES_OS)64/bin && $(EXE_PREFIX)crown-development$(EXE_SUFFIX) --data-dir $(realpath samples/$<_$(SAMPLES_PLATFORM))
+	cd build/$(SAMPLES_OS)64/bin && $(EXE_PREFIX)crown-development$(EXE_SUFFIX) --data-dir $(realpath samples/$<_$(SAMPLES_PLATFORM)) $(RUN_ARGS)
 .PHONY: run-03-joypad
 run-03-joypad: 03-joypad
-	cd build/$(SAMPLES_OS)64/bin && $(EXE_PREFIX)crown-development$(EXE_SUFFIX) --data-dir $(realpath samples/$<_$(SAMPLES_PLATFORM))
+	cd build/$(SAMPLES_OS)64/bin && $(EXE_PREFIX)crown-development$(EXE_SUFFIX) --data-dir $(realpath samples/$<_$(SAMPLES_PLATFORM)) $(RUN_ARGS)
 
 .PHONY: clean-samples
 clean-samples:
