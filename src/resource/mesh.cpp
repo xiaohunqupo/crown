@@ -23,11 +23,13 @@
 #   include "core/memory/temp_allocator.inl"
 #   include "core/murmur.h"
 #   include "core/strings/dynamic_string.inl"
+#   include "core/strings/string.inl"
 #   include "core/strings/string_id.inl"
 #   include "resource/compile_options.inl"
 #   include "resource/data_compiler.h"
 #   include "resource/mesh.h"
 #   include "resource/mesh_fbx.h"
+#   include "resource/mesh_obj.h"
 #   include "resource/mesh_resource.h"
 #   include <bx/error.h>
 #   include <bx/readerwriter.h>
@@ -435,6 +437,9 @@ namespace mesh
 			RETURN_IF_ERROR(sjson::parse_string(source, obj["source"]));
 
 			RETURN_IF_FILE_MISSING(source.c_str(), opts);
+			if (str_has_suffix_case(source.c_str(), ".obj"))
+				return crown::obj::parse(m, source.c_str(), opts);
+
 			Buffer fbx_buf = opts.read(source.c_str());
 			return fbx::parse(m, fbx_buf, opts);
 		} else {

@@ -178,11 +178,14 @@ namespace MeshResource
 	public static void import(Import import_result, Database database, string destination_dir, SList<string> filenames, Gtk.Window? parent_window)
 	{
 		SList<string> fbx_filenames = new SList<string>();
+		SList<string> obj_filenames = new SList<string>();
 		SList<string> mesh_filenames = new SList<string>();
 		foreach (unowned string filename_i in filenames) {
 			string fi = filename_i.down();
 			if (fi.has_suffix(".fbx"))
 				fbx_filenames.append(filename_i);
+			else if (fi.has_suffix(".obj"))
+				obj_filenames.append(filename_i);
 			else if (fi.has_suffix(".mesh"))
 				mesh_filenames.append(filename_i);
 			else
@@ -195,11 +198,17 @@ namespace MeshResource
 		if (mesh_filenames != null)
 			res = MeshResource.do_import(database, destination_dir, mesh_filenames, out primary_path);
 
-		// .fbx files call import_result from FBXImportDialog, while mixed (.mesh + .fbx) batches are not supported.
-		if (res == ImportResult.SUCCESS && fbx_filenames != null)
+		// .fbx/.obj files call import_result from their import dialogs.
+		if (res == ImportResult.SUCCESS && fbx_filenames != null && obj_filenames != null) {
+			loge("Mixed FBX and OBJ imports are not supported");
+			import_result(ImportResult.ERROR, primary_path);
+		} else if (res == ImportResult.SUCCESS && fbx_filenames != null) {
 			FBXImporter.import(import_result, database, destination_dir, fbx_filenames, parent_window);
-		else
+		} else if (res == ImportResult.SUCCESS && obj_filenames != null) {
+			OBJImporter.import(import_result, database, destination_dir, obj_filenames, parent_window);
+		} else {
 			import_result(res, primary_path);
+		}
 	}
 
 } /* namespace MeshResource */

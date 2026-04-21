@@ -43,7 +43,14 @@ public struct Mesh
 			ufbx.Error error = {};
 			ufbx.LoadOpts load_opts = {};
 			load_opts.ignore_all_content = true;
-			ufbx.Scene? scene = ufbx.Scene.load_file(_project.absolute_path((string)mesh["source"]), load_opts, ref error);
+			string source_path = _project.absolute_path((string)mesh["source"]);
+			if (source_path.down().has_suffix(".obj"))
+				load_opts.file_format = ufbx.FileFormat.OBJ;
+			ufbx.Scene? scene = ufbx.Scene.load_file(source_path, load_opts, ref error);
+			if (scene == null) {
+				loge("ufbx: %s".printf((string)error.description.data));
+				return;
+			}
 
 			for (size_t i = 0; i < scene.nodes.data.length; ++i) {
 				unowned ufbx.Node node = scene.nodes.data[i];
