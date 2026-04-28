@@ -1082,6 +1082,7 @@ public static void create_object_types(Database database)
 		{
 			type = PropertyType.DOUBLE,
 			name = "data.break_force",
+			input_double_flags = InputDoubleFlags.INFINITY,
 			deffault = (double)float.MAX,
 			min = 0.0,
 			tooltip = "Linear break threshold. Use Infinity to disable breaking.",
@@ -1129,6 +1130,7 @@ public static void create_object_types(Database database)
 		{
 			type = PropertyType.DOUBLE,
 			name = "data.break_force",
+			input_double_flags = InputDoubleFlags.INFINITY,
 			deffault = (double)float.MAX,
 			min = 0.0,
 			tooltip = "Linear break threshold. Use Infinity to disable breaking.",
@@ -1383,6 +1385,7 @@ public static void create_object_types(Database database)
 		{
 			type = PropertyType.DOUBLE,
 			name = "data.break_force",
+			input_double_flags = InputDoubleFlags.INFINITY,
 			deffault = (double)float.MAX,
 			min = 0.0,
 			tooltip = "Linear break threshold. Use Infinity to disable breaking.",
@@ -1508,6 +1511,7 @@ public static void create_object_types(Database database)
 		{
 			type = PropertyType.DOUBLE,
 			name = "data.break_force",
+			input_double_flags = InputDoubleFlags.INFINITY,
 			deffault = (double)float.MAX,
 			min = 0.0,
 			tooltip = "Linear break threshold. Use Infinity to disable breaking.",
@@ -1576,6 +1580,7 @@ public static void create_object_types(Database database)
 		{
 			type = PropertyType.DOUBLE,
 			name = "data.break_force",
+			input_double_flags = InputDoubleFlags.INFINITY,
 			deffault = (double)float.MAX,
 			min = 0.0,
 			tooltip = "Linear break threshold. Use Infinity to disable breaking.",
@@ -1685,6 +1690,7 @@ public static void create_object_types(Database database)
 		{
 			type = PropertyType.DOUBLE,
 			name = "data.break_force",
+			input_double_flags = InputDoubleFlags.INFINITY,
 			deffault = (double)float.MAX,
 			min = 0.0,
 			tooltip = "Linear break threshold. Use Infinity to disable breaking.",

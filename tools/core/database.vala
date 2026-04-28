@@ -26,6 +26,12 @@ public enum PropertyEditorType
 	COLOR,    ///< An RGB color from a color picker.
 }
 
+public enum InputDoubleFlags
+{
+	NONE     = 0,
+	INFINITY = 1 << 0,
+}
+
 public delegate void EnumCallback(InputField enum_property, InputEnum property, Project project);
 public delegate void ResourceCallback(InputField enum_property, InputResource property, Project project);
 
@@ -36,6 +42,7 @@ public struct PropertyDefinition
 	public string? label;
 
 	public PropertyEditorType editor;
+	public InputDoubleFlags input_double_flags;
 	public Value? min;
 	public Value? max;
 	public Value? deffault;

@@ -186,7 +186,13 @@ public class PropertyGrid : Gtk.Grid
 				if (def.editor == PropertyEditorType.ANGLE)
 					p = new InputAngle((double)def.deffault, (double)def.min, (double)def.max);
 				else
-					p = new InputDouble((double)def.deffault, (double)def.min, (double)def.max);
+					p = new InputDouble((double)def.deffault
+						, (double)def.min
+						, (double)def.max
+						, InputDouble.DEFAULT_PREVIEW_DECIMALS
+						, InputDouble.DEFAULT_EDIT_DECIMALS
+						, def.input_double_flags
+						);
 				break;
 			case PropertyType.STRING:
 				if (def.editor == PropertyEditorType.ENUM)

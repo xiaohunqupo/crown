@@ -7,6 +7,13 @@ namespace Crown
 {
 public class InputDouble : InputField
 {
+	private const double INFINITY_VALUE = (double)float.MAX;
+	private const string INFINITY_LABEL = "Infinity";
+
+	public const int DEFAULT_PREVIEW_DECIMALS = 4;
+	public const int DEFAULT_EDIT_DECIMALS = 5;
+
+	public InputDoubleFlags _flags;
 	public bool _inconsistent;
 	public double _min;
 	public double _max;
@@ -57,10 +64,14 @@ public class InputDouble : InputField
 		}
 	}
 
-	public InputDouble(double val, double min, double max, int preview_decimals = 4, int edit_decimals = 5)
+	public InputDouble(double val, double min, double max, int preview_decimals = DEFAULT_PREVIEW_DECIMALS, int edit_decimals = DEFAULT_EDIT_DECIMALS, InputDoubleFlags flags = InputDoubleFlags.NONE)
 	{
+		_flags = flags;
+
 		_entry = new Gtk.Entry();
-		_entry.input_purpose = Gtk.InputPurpose.NUMBER;
+		_entry.input_purpose = (_flags & InputDoubleFlags.INFINITY) != 0
+			? Gtk.InputPurpose.FREE_FORM
+			: Gtk.InputPurpose.NUMBER;
 		_entry.set_width_chars(1);
 
 		_entry.activate.connect(on_activate);
@@ -109,7 +120,7 @@ public class InputDouble : InputField
 			if (_inconsistent)
 				_entry.text = "";
 			else
-				_entry.text = print_max_decimals(_value, _edit_decimals);
+				_entry.text = format_value(_value, _edit_decimals);
 
 			GLib.Idle.add(() => {
 					_entry.set_position(-1);
@@ -124,10 +135,10 @@ public class InputDouble : InputField
 		_entry.select_region(0, 0);
 		_entry.set_position(-1);
 
-		if (_entry.text != print_max_decimals(_value, _edit_decimals))
+		if (_entry.text != format_value(_value, _edit_decimals))
 			set_value_safe(string_to_double(_entry.text, _value));
 		else
-			_entry.text = print_max_decimals(_value, _preview_decimals);
+			_entry.text = format_value(_value, _preview_decimals);
 	}
 
 	public bool on_focus_in(Gdk.EventFocus ev)
@@ -138,7 +149,7 @@ public class InputDouble : InputField
 		if (_inconsistent)
 			_entry.text = "";
 		else
-			_entry.text = print_max_decimals(_value, _edit_decimals);
+			_entry.text = format_value(_value, _edit_decimals);
 
 		_entry.set_position(-1);
 		_entry.select_region(0, -1);
@@ -158,10 +169,10 @@ public class InputDouble : InputField
 				_entry.text = INCONSISTENT_LABEL;
 			}
 		} else {
-			if (_entry.text != print_max_decimals(_value, _edit_decimals))
+			if (_entry.text != format_value(_value, _edit_decimals))
 				set_value_safe(string_to_double(_entry.text, _value));
 			else
-				_entry.text = print_max_decimals(_value, _preview_decimals);
+				_entry.text = format_value(_value, _preview_decimals);
 		}
 
 		_entry.select_region(0, 0);
@@ -174,7 +185,7 @@ public class InputDouble : InputField
 		double clamped = val.clamp(_min, _max);
 
 		// Convert to text for displaying.
-		_entry.text = print_max_decimals(clamped, _preview_decimals);
+		_entry.text = format_value(clamped, _preview_decimals);
 
 		_inconsistent = false;
 
@@ -188,6 +199,11 @@ public class InputDouble : InputField
 	/// Returns @a str as double or @a deffault if conversion fails.
 	public double string_to_double(string str, double deffault)
 	{
+		double special_value = 0.0;
+		if ((_flags & InputDoubleFlags.INFINITY) != 0
+			&& try_parse_special_literal(str, out special_value))
+			return special_value;
+
 		TinyExpr.Variable vars[] =
 		{
 			{ "x", &_value }
@@ -197,6 +213,33 @@ public class InputDouble : InputField
 		TinyExpr.Expr expr = TinyExpr.compile(str, vars, out err);
 
 		return err == 0 ? TinyExpr.eval(expr) : deffault;
+	}
+
+	public string format_value(double value, int max_decimals)
+	{
+		if ((_flags & InputDoubleFlags.INFINITY) != 0
+			&& value == INFINITY_VALUE)
+			return INFINITY_LABEL;
+
+		return print_max_decimals(value, max_decimals);
+	}
+
+	public bool try_parse_special_literal(string str, out double value)
+	{
+		string normalized = str.strip().down();
+
+		switch (normalized) {
+		case "inf":
+		case "+inf":
+		case "infinity":
+		case "+infinity":
+			value = INFINITY_VALUE;
+			return true;
+
+		default:
+			value = 0.0;
+			return false;
+		}
 	}
 
 	public void set_min(double min)
