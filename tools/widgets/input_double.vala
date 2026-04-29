@@ -68,9 +68,7 @@ public class InputDouble : InputField
 		_flags = flags;
 
 		_entry = new Gtk.Entry();
-		_entry.input_purpose = (_flags & InputDoubleFlags.INFINITY) != 0
-			? Gtk.InputPurpose.FREE_FORM
-			: Gtk.InputPurpose.NUMBER;
+		_entry.input_purpose = Gtk.InputPurpose.FREE_FORM;
 		_entry.set_width_chars(1);
 
 		_entry.activate.connect(on_activate);
