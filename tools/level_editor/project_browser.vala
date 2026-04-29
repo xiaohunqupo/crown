@@ -10,6 +10,9 @@ public const Gtk.TargetEntry[] dnd_targets =
 	{ "RESOURCE_PATH", Gtk.TargetFlags.SAME_APP, 0 },
 };
 
+public const uint BUTTON_BACK = 8;
+public const uint BUTTON_FORWARD = 9;
+
 public string project_path(string type, string name)
 {
 	if (type == "<folder>")
@@ -333,6 +336,7 @@ public class ProjectFolderView : Gtk.Box
 		_list_view.drag_end.connect(on_drag_end);
 
 		_list_view_gesture_click = new Gtk.GestureMultiPress(_list_view);
+		_list_view_gesture_click.set_propagation_phase(Gtk.PropagationPhase.CAPTURE);
 		_list_view_gesture_click.set_button(0);
 		_list_view_gesture_click.pressed.connect((n_press, x, y) => {
 				on_button_pressed(_list_view_gesture_click.get_current_button(), n_press, x, y);
@@ -462,6 +466,9 @@ public class ProjectFolderView : Gtk.Box
 
 	public bool on_button_pressed(uint button, int n_press, double x, double y)
 	{
+		if (_project_browser.handle_navigation_mouse_button(button))
+			return Gdk.EVENT_STOP;
+
 		Gtk.TreePath? path = path_at_pos((int)x, (int)y);
 
 		if (button == Gdk.BUTTON_SECONDARY) {
@@ -1035,6 +1042,7 @@ public class ProjectBrowser : Gtk.Box
 		_tree_view.headers_visible = false;
 
 		_tree_view_gesture_click = new Gtk.GestureMultiPress(_tree_view);
+		_tree_view_gesture_click.set_propagation_phase(Gtk.PropagationPhase.CAPTURE);
 		_tree_view_gesture_click.set_button(0);
 		_tree_view_gesture_click.pressed.connect(on_button_pressed);
 
@@ -1552,6 +1560,21 @@ public class ProjectBrowser : Gtk.Box
 		_navigating_history = false;
 	}
 
+	public bool handle_navigation_mouse_button(uint button)
+	{
+		if (button == BUTTON_BACK) {
+			navigate_back();
+			return true;
+		}
+
+		if (button == BUTTON_FORWARD) {
+			navigate_forward();
+			return true;
+		}
+
+		return false;
+	}
+
 	public void on_open_directory(GLib.SimpleAction action, GLib.Variant? param)
 	{
 		string dir_name = param.get_string();
@@ -1597,14 +1620,18 @@ public class ProjectBrowser : Gtk.Box
 
 	public void on_button_pressed(int n_press, double x, double y)
 	{
+		uint button = _tree_view_gesture_click.get_current_button();
+		if (handle_navigation_mouse_button(button)) {
+			_tree_view_gesture_click.set_state(Gtk.EventSequenceState.CLAIMED);
+			return;
+		}
+
 		int bx;
 		int by;
 		Gtk.TreePath path;
 		_tree_view.convert_widget_to_bin_window_coords((int)x, (int)y, out bx, out by);
 		if (!_tree_view.get_path_at_pos(bx, by, out path, null, null, null))
 			return;
-
-		uint button = _tree_view_gesture_click.get_current_button();
 
 		if (button == Gdk.BUTTON_SECONDARY) {
 			Gtk.TreeIter iter;
