@@ -7,6 +7,8 @@ namespace Crown
 {
 public class InputObject : InputEnum
 {
+	public const string UNSET_OBJECT = "(None)";
+
 	public StringId64 _type;
 	public Database _database;
 
@@ -17,6 +19,7 @@ public class InputObject : InputEnum
 
 	public override void set_union_value(GLib.Value v)
 	{
+		append_objects(); // FIXME: find an efficient way of doing this.
 		this.value = (Guid)v;
 	}
 
@@ -68,6 +71,7 @@ public class InputObject : InputEnum
 		Guid previous_value = this.value;
 
 		clear();
+		append(GUID_ZERO.to_string(), UNSET_OBJECT);
 
 		foreach (Guid? id in all_of_type) {
 			StringId64 object_type = StringId64(_database.object_type(id));
