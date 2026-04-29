@@ -7,9 +7,8 @@ namespace Crown
 {
 public class InputDouble : InputField
 {
-	private const double INFINITY_VALUE = (double)float.MAX;
-	private const string INFINITY_LABEL = "Infinity";
-
+	public const double INFINITY_VALUE = (double)float.MAX;
+	public const string INFINITY_LABEL = "Infinity";
 	public const int DEFAULT_PREVIEW_DECIMALS = 4;
 	public const int DEFAULT_EDIT_DECIMALS = 5;
 
