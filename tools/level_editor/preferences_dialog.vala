@@ -22,6 +22,9 @@ public class PreferencesDialog : Gtk.Window
 
 	// Viewport page.
 	public InputDouble _level_autosave_spin_button;
+	public InputDouble _camera_movement_speed;
+	public InputAngle _camera_rotation_speed;
+	public InputDouble _camera_speed_modifier;
 	public PropertyGridSet _viewport_set;
 
 	// System page.
@@ -121,6 +124,20 @@ public class PreferencesDialog : Gtk.Window
 		cv.add_row("Autosave (mins)", _level_autosave_spin_button, "Automatically save the currently open level.");
 		_viewport_set.add_property_grid(cv, "Level");
 
+		_camera_movement_speed = new InputDouble(30, 0.001, 1000);
+		_camera_movement_speed.value_changed.connect(on_camera_settings_value_changed);
+		_camera_rotation_speed = new InputAngle(0.002, 0.001, 15);
+		_camera_rotation_speed.value_changed.connect(on_camera_settings_value_changed);
+		_camera_speed_modifier = new InputDouble(4, 1.001, 10);
+		_camera_speed_modifier.value_changed.connect(on_camera_settings_value_changed);
+
+		cv = new PropertyGrid();
+		cv.column_homogeneous = true;
+		cv.add_row("Movement Speed", _camera_movement_speed, "Flythrough camera speed in meters per second.");
+		cv.add_row("Rotation Speed", _camera_rotation_speed, "Camera rotation speed in degrees per pixel.");
+		cv.add_row("Speed Modifier", _camera_speed_modifier, "Flythrough camera speed multiplier/divisor.");
+		_viewport_set.add_property_grid(cv, "Camera");
+
 		// Memory and limits page.
 		_undo_redo_max_size = new InputDouble(8, 1, 2048);
 		_log_delete_after_days = new InputDouble(10, 0, 90);
@@ -209,6 +226,17 @@ public class PreferencesDialog : Gtk.Window
 		app.set_autosave_timer((uint)_level_autosave_spin_button.value);
 	}
 
+	public void on_camera_settings_value_changed()
+	{
+		if (_editor == null)
+			return;
+
+		_editor.send_script("LevelEditor._camera._movement_speed = %.17g".printf(_camera_movement_speed.value));
+		_editor.send_script("LevelEditor._camera._rotation_speed = %.17g".printf(_camera_rotation_speed.value));
+		_editor.send_script("LevelEditor._camera._movement_speed_modifier = %.17g".printf(_camera_speed_modifier.value));
+		_editor.send(DeviceApi.frame());
+	}
+
 	public void decode(Hashtable settings)
 	{
 		Hashtable preferences = settings.has_key("preferences")
@@ -224,6 +252,9 @@ public class PreferencesDialog : Gtk.Window
 		_axis_selected_color_button.value = Vector3.from_array(preferences.has_key("axis_selected") ? (Gee.ArrayList<GLib.Value?>)preferences["axis_selected"] : _axis_selected_color_button.value.to_array());
 		_gizmo_size_spin_button.value     = preferences.has_key("gizmo_size") ? (double)preferences["gizmo_size"] : _gizmo_size_spin_button.value;
 		_level_autosave_spin_button.value = preferences.has_key("autosave_timer") ? (double)preferences["autosave_timer"] : _level_autosave_spin_button.value;
+		_camera_movement_speed.value      = preferences.has_key("camera_movement_speed") ? (double)preferences["camera_movement_speed"] : _camera_movement_speed.value;
+		_camera_rotation_speed.value      = preferences.has_key("camera_rotation_speed") ? (double)preferences["camera_rotation_speed"] : _camera_rotation_speed.value;
+		_camera_speed_modifier.value      = preferences.has_key("camera_speed_modifier") ? (double)preferences["camera_speed_modifier"] : _camera_speed_modifier.value;
 		_undo_redo_max_size.value         = (preferences.has_key("undo_redo_max_size") ? (double)preferences["undo_redo_max_size"] : _undo_redo_max_size.value);
 		_log_delete_after_days.value      = preferences.has_key("log_expiration") ? (double)preferences["log_expiration"] : _log_delete_after_days.value;
 		_console_max_lines.value          = preferences.has_key("console_max_lines") ? (double)preferences["console_max_lines"] : _console_max_lines.value;
@@ -305,6 +336,9 @@ public class PreferencesDialog : Gtk.Window
 		preferences["axis_selected"]  = _axis_selected_color_button.value.to_array();
 		preferences["gizmo_size"]     = _gizmo_size_spin_button.value;
 		preferences["autosave_timer"] = _level_autosave_spin_button.value;
+		preferences["camera_movement_speed"] = _camera_movement_speed.value;
+		preferences["camera_rotation_speed"] = _camera_rotation_speed.value;
+		preferences["camera_speed_modifier"] = _camera_speed_modifier.value;
 		preferences["undo_redo_max_size"] = _undo_redo_max_size.value;
 		preferences["log_expiration"] = _log_delete_after_days.value;
 		preferences["console_max_lines"] = _console_max_lines.value;
@@ -359,6 +393,7 @@ public class PreferencesDialog : Gtk.Window
 		GLib.Signal.emit_by_name(_grid_color_button, "value-changed");
 		GLib.Signal.emit_by_name(_gizmo_size_spin_button, "value-changed");
 		GLib.Signal.emit_by_name(_level_autosave_spin_button, "value-changed");
+		GLib.Signal.emit_by_name(_camera_movement_speed, "value-changed");
 		GLib.Signal.emit_by_name(_log_delete_after_days, "value-changed");
 	}
 }
