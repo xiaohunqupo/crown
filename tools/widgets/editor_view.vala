@@ -63,6 +63,10 @@ public class EditorView : Gtk.EventBox
 		case Gdk.Key.d:         return "d";
 		case Gdk.Key.q:         return "q";
 		case Gdk.Key.e:         return "e";
+		case Gdk.Key.Up:        return "move_up";
+		case Gdk.Key.Down:      return "move_down";
+		case Gdk.Key.Right:     return "move_right";
+		case Gdk.Key.Left:      return "move_left";
 		case Gdk.Key.Control_L: return "ctrl_left";
 		case Gdk.Key.Shift_L:   return "shift_left";
 		case Gdk.Key.Shift_R:   return "shift_right";
@@ -112,6 +116,10 @@ public class EditorView : Gtk.EventBox
 		_keys[Gdk.Key.d] = false;
 		_keys[Gdk.Key.q] = false;
 		_keys[Gdk.Key.e] = false;
+		_keys[Gdk.Key.Up] = false;
+		_keys[Gdk.Key.Down] = false;
+		_keys[Gdk.Key.Right] = false;
+		_keys[Gdk.Key.Left] = false;
 		_keys[Gdk.Key.Control_L] = false;
 		_keys[Gdk.Key.Shift_L] = false;
 		_keys[Gdk.Key.Shift_R] = false;
@@ -337,30 +345,27 @@ public class EditorView : Gtk.EventBox
 	public bool on_key_pressed(uint keyval, uint keycode, Gdk.ModifierType state)
 	{
 		uint key = Gdk.keyval_to_lower(keyval);
+		bool stop_event = _tick_callback_id != 0
+			&& (key == Gdk.Key.Up
+				|| key == Gdk.Key.Down
+				|| key == Gdk.Key.Right
+				|| key == Gdk.Key.Left
+				);
 
 		if (keyval == Gdk.Key.Escape)
 			GLib.Application.get_default().activate_action("cancel-place", null);
-
-		if (keyval == Gdk.Key.Up)
-			_buffer.append("LevelEditor:key_down(\"move_up\")");
-		if (keyval == Gdk.Key.Down)
-			_buffer.append("LevelEditor:key_down(\"move_down\")");
-		if (keyval == Gdk.Key.Right)
-			_buffer.append("LevelEditor:key_down(\"move_right\")");
-		if (keyval == Gdk.Key.Left)
-			_buffer.append("LevelEditor:key_down(\"move_left\")");
 
 		if (_keys.has_key(key)) {
 			if (!_keys[key]) {
 				_buffer.append(LevelEditorApi.key_down(key_to_string(key)));
 
-				if (key == Gdk.Key.w)
+				if (key == Gdk.Key.w || key == Gdk.Key.Up)
 					_buffer.append("LevelEditor._camera.actions.forward = true;");
-				if (key == Gdk.Key.s)
+				if (key == Gdk.Key.s || key == Gdk.Key.Down)
 					_buffer.append("LevelEditor._camera.actions.back = true;");
-				if (key == Gdk.Key.a)
+				if (key == Gdk.Key.a || key == Gdk.Key.Left)
 					_buffer.append("LevelEditor._camera.actions.left = true;");
-				if (key == Gdk.Key.d)
+				if (key == Gdk.Key.d || key == Gdk.Key.Right)
 					_buffer.append("LevelEditor._camera.actions.right = true;");
 				if (key == Gdk.Key.q)
 					_buffer.append("LevelEditor._camera.actions.up = true;");
@@ -380,7 +385,7 @@ public class EditorView : Gtk.EventBox
 			_buffer.erase();
 			_runtime.send(DeviceApi.frame());
 		}
-		return Gdk.EVENT_PROPAGATE;
+		return stop_event ? Gdk.EVENT_STOP : Gdk.EVENT_PROPAGATE;
 	}
 
 	public void on_key_released(uint keyval, uint keycode, Gdk.ModifierType state)
@@ -391,13 +396,13 @@ public class EditorView : Gtk.EventBox
 			if (_keys[key]) {
 				_buffer.append(LevelEditorApi.key_up(key_to_string(key)));
 
-				if (key == Gdk.Key.w)
+				if (key == Gdk.Key.w || key == Gdk.Key.Up)
 					_buffer.append("LevelEditor._camera.actions.forward = false");
-				if (key == Gdk.Key.s)
+				if (key == Gdk.Key.s || key == Gdk.Key.Down)
 					_buffer.append("LevelEditor._camera.actions.back = false");
-				if (key == Gdk.Key.a)
+				if (key == Gdk.Key.a || key == Gdk.Key.Left)
 					_buffer.append("LevelEditor._camera.actions.left = false");
-				if (key == Gdk.Key.d)
+				if (key == Gdk.Key.d || key == Gdk.Key.Right)
 					_buffer.append("LevelEditor._camera.actions.right = false");
 				if (key == Gdk.Key.q)
 					_buffer.append("LevelEditor._camera.actions.up = false");
