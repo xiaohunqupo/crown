@@ -107,6 +107,9 @@ struct AnimationStateMachine
 
 	///
 	void reload(const StateMachineResource *old_resource, const StateMachineResource *new_resource);
+
+	///
+	void reload(const SpriteAnimationResource *old_resource, const SpriteAnimationResource *new_resource);
 };
 
 } // namespace crown

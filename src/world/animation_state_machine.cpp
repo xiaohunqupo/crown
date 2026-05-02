@@ -381,6 +381,32 @@ void AnimationStateMachine::reload(const StateMachineResource *old_resource, con
 	}
 }
 
+void AnimationStateMachine::reload(const SpriteAnimationResource *old_resource, const SpriteAnimationResource *new_resource)
+{
+	for (u32 i = 0; i < array::size(_sprite_animation_player->_animations); ++i) {
+		SpriteAnimationPlayer::Animation &animation = _sprite_animation_player->_animations[i];
+
+		if (animation.resource == old_resource) {
+			animation.num_frames = new_resource->num_frames;
+			animation.time_total = new_resource->total_time;
+			animation.frames = sprite_animation_resource::frames(new_resource);
+			animation.resource = new_resource;
+		}
+	}
+
+	for (u32 i = 0; i < array::size(_machines); ++i) {
+		Machine &machine = _machines[i];
+
+		if (machine.anim_type == RESOURCE_TYPE_SPRITE_ANIMATION && machine.anim_resource == old_resource) {
+			machine.anim_resource = new_resource;
+			machine.time_total = new_resource->total_time;
+
+			if (machine.time > machine.time_total)
+				machine.time = !!machine.state->loop ? fmod(machine.time, machine.time_total) : machine.time_total;
+		}
+	}
+}
+
 void AnimationStateMachine::set_state_machine(StateMachineId state_machine, const StateMachineResource *state_machine_resource)
 {
 	Machine &machine = _machines[state_machine.i];

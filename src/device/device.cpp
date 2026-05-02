@@ -969,6 +969,7 @@ void Device::refresh(const char *json)
 			|| resource_type == RESOURCE_TYPE_MATERIAL
 			|| resource_type == RESOURCE_TYPE_RENDER_CONFIG
 			|| resource_type == RESOURCE_TYPE_SPRITE
+			|| resource_type == RESOURCE_TYPE_SPRITE_ANIMATION
 			|| resource_type == RESOURCE_TYPE_UNIT
 			|| resource_type == RESOURCE_TYPE_STATE_MACHINE
 			;
@@ -1003,6 +1004,13 @@ void Device::refresh(const char *json)
 				{
 					World *w = (World *)container_of(cur, World, _node);
 					w->_render_world->reload_sprites((SpriteResource *)old_resource, (SpriteResource *)new_resource);
+				}
+			} else if (resource_type == RESOURCE_TYPE_SPRITE_ANIMATION) {
+				ListNode *cur;
+				list_for_each(cur, &_worlds)
+				{
+					World *w = (World *)container_of(cur, World, _node);
+					w->_animation_state_machine->reload((const SpriteAnimationResource *)old_resource, (const SpriteAnimationResource *)new_resource);
 				}
 			} else if (resource_type == RESOURCE_TYPE_UNIT) {
 				ListNode *cur;
