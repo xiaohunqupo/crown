@@ -116,7 +116,15 @@ local function camera_flythrough_action(self, dt, actions)
 		return
 	end
 
-	local speed = self._movement_speed * dt
+	local speed = self._movement_speed
+
+	if actions.fast then
+		speed = speed * self._movement_speed_modifier
+	elseif actions.slow then
+		speed = speed / self._movement_speed_modifier
+	end
+
+	speed = speed * dt
 
 	local camera_pose     = self:local_pose()
 	local camera_position = Matrix4x4.translation(camera_pose)
@@ -145,6 +153,8 @@ function Camera:init(world, unit)
 	self._unit = unit
 	self._sg = World.scene_graph(world)
 	self._movement_speed = 30
+	self._movement_speed_modifier = 4
+	self._movement_speed_wheel_factor = 1.2
 	self._rotation_speed = 0.002
 	self._orthographic_size = 10
 	self._target_distance = 10
@@ -207,7 +217,7 @@ function Camera:is_orthographic()
 end
 
 function Camera:mouse_wheel(delta)
-	self._movement_speed = math.max(0.001, self._movement_speed + delta * 0.1)
+	self._movement_speed = math.max(0.001, self._movement_speed * (self._movement_speed_wheel_factor ^ delta))
 end
 
 function Camera:camera_ray(x, y)
