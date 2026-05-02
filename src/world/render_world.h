@@ -362,6 +362,9 @@ struct RenderWorld
 	///
 	void reload_materials(const MaterialResource *old_resource, const MaterialResource *new_resource);
 
+	///
+	void reload_sprites(const SpriteResource *old_resource, const SpriteResource *new_resource);
+
 	/// Callback to customize drawing of objects.
 	typedef void (*DrawOverride)(u8 view_id, UnitId unit_id, RenderWorld *rw);
 

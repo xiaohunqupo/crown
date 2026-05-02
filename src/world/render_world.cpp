@@ -1888,6 +1888,20 @@ void RenderWorld::reload_materials(const MaterialResource *old_resource, const M
 #endif
 }
 
+void RenderWorld::reload_sprites(const SpriteResource *old_resource, const SpriteResource *new_resource)
+{
+	for (u32 i = 0; i < _sprite_manager._data.size; ++i) {
+		if (_sprite_manager._data.resource[i] == old_resource) {
+			_sprite_manager._data.resource[i] = new_resource;
+			_sprite_manager._data.frame[i] %= new_resource->num_frames;
+			_sprite_manager._data.aabb[i] = new_resource->aabb;
+			_sprite_manager._data.sphere[i] = new_resource->sphere;
+			_sprite_manager._data.flags[i] |= RenderableFlags::DIRTY;
+			_sprite_manager._dirty = true;
+		}
+	}
+}
+
 void RenderWorld::MeshManager::allocate(u32 num)
 {
 	CE_ENSURE(num > _data.size);
