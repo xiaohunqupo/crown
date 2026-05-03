@@ -347,10 +347,10 @@ public class EditorView : Gtk.EventBox
 		uint key = Gdk.keyval_to_lower(keyval);
 		bool stop_event = _tick_callback_id != 0
 			&& (key == Gdk.Key.Up
-				|| key == Gdk.Key.Down
-				|| key == Gdk.Key.Right
-				|| key == Gdk.Key.Left
-				);
+			|| key == Gdk.Key.Down
+			|| key == Gdk.Key.Right
+			|| key == Gdk.Key.Left
+			);
 
 		if (keyval == Gdk.Key.Escape)
 			GLib.Application.get_default().activate_action("cancel-place", null);
