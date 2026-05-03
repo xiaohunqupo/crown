@@ -966,6 +966,7 @@ void Device::refresh(const char *json)
 		bool is_type_reloadable = resource_type == RESOURCE_TYPE_SCRIPT
 			|| resource_type == RESOURCE_TYPE_TEXTURE
 			|| resource_type == RESOURCE_TYPE_SHADER
+			|| resource_type == RESOURCE_TYPE_FONT
 			|| resource_type == RESOURCE_TYPE_MATERIAL
 			|| resource_type == RESOURCE_TYPE_RENDER_CONFIG
 			|| resource_type == RESOURCE_TYPE_SPRITE
