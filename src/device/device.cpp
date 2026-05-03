@@ -969,6 +969,7 @@ void Device::refresh(const char *json)
 			|| resource_type == RESOURCE_TYPE_FONT
 			|| resource_type == RESOURCE_TYPE_MATERIAL
 			|| resource_type == RESOURCE_TYPE_RENDER_CONFIG
+			|| resource_type == RESOURCE_TYPE_SOUND
 			|| resource_type == RESOURCE_TYPE_SPRITE
 			|| resource_type == RESOURCE_TYPE_SPRITE_ANIMATION
 			|| resource_type == RESOURCE_TYPE_UNIT
@@ -1012,6 +1013,13 @@ void Device::refresh(const char *json)
 				{
 					World *w = (World *)container_of(cur, World, _node);
 					w->_animation_state_machine->reload((const SpriteAnimationResource *)old_resource, (const SpriteAnimationResource *)new_resource);
+				}
+			} else if (resource_type == RESOURCE_TYPE_SOUND) {
+				ListNode *cur;
+				list_for_each(cur, &_worlds)
+				{
+					World *w = (World *)container_of(cur, World, _node);
+					w->_sound_world->reload_sounds((const SoundResource *)old_resource, (const SoundResource *)new_resource);
 				}
 			} else if (resource_type == RESOURCE_TYPE_UNIT) {
 				ListNode *cur;

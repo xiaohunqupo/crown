@@ -319,12 +319,6 @@ struct SoundInstance
 			rm->close_stream(_stream);
 	}
 
-	void reload(ResourceManager *rm)
-	{
-		destroy(rm);
-		create(rm, _name, _loop, _range, _flags, position(), _group);
-	}
-
 	void pause()
 	{
 		AL_CHECK(alSourcePause(_source));
@@ -571,11 +565,45 @@ struct SoundWorldAL : public SoundWorld
 
 	void reload_sounds(const SoundResource *old_sr, const SoundResource *new_sr)
 	{
-		CE_UNUSED(new_sr);
-
 		for (u32 i = 0; i < _num_objects; ++i) {
-			if (_playing_sounds[i]._resource == old_sr) {
-				_playing_sounds[i].reload(_resource_manager);
+			SoundInstance &inst = _playing_sounds[i];
+
+			if (inst._resource == old_sr) {
+				const SoundInstanceId id = inst._id;
+				const StringId64 name = inst._name;
+				const bool loop = inst._loop;
+				const f32 volume = inst._volume;
+				const StringId32 group = inst._group;
+				const f32 range = inst._range;
+				const u32 flags = inst._flags;
+				const Vector3 pos = inst.position();
+
+				ALint state;
+				AL_CHECK(alGetSourcei(inst._source, AL_SOURCE_STATE, &state));
+
+				inst.destroy(_resource_manager);
+
+				File *stream = NULL;
+				if (new_sr->stream_format != StreamFormat::NONE)
+					stream = _resource_manager->open_stream(RESOURCE_TYPE_SOUND, name);
+
+				inst._id = id;
+				inst._name = name;
+				inst.create(new_sr, stream, loop, range, flags, pos, group);
+
+				set_sound_volumes(1, &id, &volume);
+
+				if (distance_squared(translation(_listener_pose), inst.position()) > range*range) {
+					AL_CHECK(alSourcef(inst._source, AL_GAIN, 0.0f));
+				}
+
+				if (state == AL_PLAYING || state == AL_PAUSED) {
+					AL_CHECK(alSourcePlay(inst._source));
+
+					if (state == AL_PAUSED) {
+						AL_CHECK(alSourcePause(inst._source));
+					}
+				}
 			}
 		}
 	}
