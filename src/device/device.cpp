@@ -968,6 +968,7 @@ void Device::refresh(const char *json)
 			|| resource_type == RESOURCE_TYPE_SHADER
 			|| resource_type == RESOURCE_TYPE_FONT
 			|| resource_type == RESOURCE_TYPE_MATERIAL
+			|| resource_type == RESOURCE_TYPE_MESH
 			|| resource_type == RESOURCE_TYPE_RENDER_CONFIG
 			|| resource_type == RESOURCE_TYPE_SOUND
 			|| resource_type == RESOURCE_TYPE_SPRITE
@@ -993,6 +994,13 @@ void Device::refresh(const char *json)
 				{
 					World *w = (World *)container_of(cur, World, _node);
 					w->reload_materials((MaterialResource *)old_resource, (MaterialResource *)new_resource);
+				}
+			} else if (resource_type == RESOURCE_TYPE_MESH) {
+				ListNode *cur;
+				list_for_each(cur, &_worlds)
+				{
+					World *w = (World *)container_of(cur, World, _node);
+					w->_render_world->reload_meshes((MeshResource *)old_resource, (MeshResource *)new_resource);
 				}
 			} else if (resource_type == RESOURCE_TYPE_RENDER_CONFIG) {
 				if (_render_config_resource == old_resource) {

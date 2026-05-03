@@ -363,6 +363,9 @@ struct RenderWorld
 	void reload_materials(const MaterialResource *old_resource, const MaterialResource *new_resource);
 
 	///
+	void reload_meshes(const MeshResource *old_resource, const MeshResource *new_resource);
+
+	///
 	void reload_sprites(const SpriteResource *old_resource, const SpriteResource *new_resource);
 
 	/// Callback to customize drawing of objects.
@@ -396,6 +399,7 @@ struct RenderWorld
 			u32 *prev_flags;
 #if CROWN_CAN_RELOAD
 			const MaterialResource **material_resource;
+			StringId32 *geometry_name;
 #endif
 		};
 

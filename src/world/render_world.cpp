@@ -1888,6 +1888,32 @@ void RenderWorld::reload_materials(const MaterialResource *old_resource, const M
 #endif
 }
 
+void RenderWorld::reload_meshes(const MeshResource *old_resource, const MeshResource *new_resource)
+{
+#if CROWN_CAN_RELOAD
+	bool reloaded = false;
+
+	for (u32 i = 0; i < _mesh_manager._data.size; ++i) {
+		if (_mesh_manager._data.resource[i] == old_resource) {
+			_mesh_manager.set_geometry({ i }, new_resource, _mesh_manager._data.geometry_name[i]);
+			_mesh_manager._data.flags[i] |= RenderableFlags::DIRTY;
+			_mesh_manager._dirty = true;
+			reloaded = true;
+		}
+	}
+
+	if (reloaded) {
+		LodGroupManager::LodGroupInstanceData &lgd = _lod_group_manager._data;
+		for (u32 i = 0; i < lgd.size; ++i) {
+			_lod_group_manager.update_bounds(i);
+			culling_set::update(_cullable_objects, CullableType::LOD_GROUP, i, lgd.sphere[i], lgd.world[i]);
+		}
+	}
+#else
+	CE_UNUSED_2(old_resource, new_resource);
+#endif // if CROWN_CAN_RELOAD
+}
+
 void RenderWorld::reload_sprites(const SpriteResource *old_resource, const SpriteResource *new_resource)
 {
 	for (u32 i = 0; i < _sprite_manager._data.size; ++i) {
@@ -1920,6 +1946,7 @@ void RenderWorld::MeshManager::allocate(u32 num)
 		+ num*sizeof(u32) + alignof(u32)
 #if CROWN_CAN_RELOAD
 		+ num*sizeof(MaterialResource *) + alignof(MaterialResource *)
+		+ num*sizeof(StringId32) + alignof(StringId32)
 #endif
 		+ 0
 		;
@@ -1942,6 +1969,7 @@ void RenderWorld::MeshManager::allocate(u32 num)
 	new_data.prev_flags    = (u32 *                )memory::align_top(new_data.flags + num, alignof(u32));
 #if CROWN_CAN_RELOAD
 	new_data.material_resource = (const MaterialResource **)memory::align_top(new_data.prev_flags + num, alignof(MaterialResource *));
+	new_data.geometry_name = (StringId32 *)memory::align_top(new_data.material_resource + num, alignof(StringId32));
 #endif
 
 	memcpy(new_data.unit, _data.unit, _data.size * sizeof(UnitId));
@@ -1957,6 +1985,7 @@ void RenderWorld::MeshManager::allocate(u32 num)
 	memcpy(new_data.prev_flags, _data.prev_flags, _data.size * sizeof(u32));
 #if CROWN_CAN_RELOAD
 	memcpy(new_data.material_resource, _data.material_resource, _data.size * sizeof(MaterialResource *));
+	memcpy(new_data.geometry_name, _data.geometry_name, _data.size * sizeof(StringId32));
 #endif
 
 	_allocator->deallocate(_data.buffer);
@@ -2008,6 +2037,7 @@ void RenderWorld::MeshManager::create_instances(const void *components_data
 		_data.prev_flags[last] = 0;
 #if CROWN_CAN_RELOAD
 		_data.material_resource[last] = mat_res;
+		_data.geometry_name[last] = meshes[i].geometry_name;
 #endif
 		_dirty = true;
 
@@ -2041,6 +2071,7 @@ void RenderWorld::MeshManager::destroy(MeshId inst)
 	_data.prev_flags[inst.i] = _data.prev_flags[last];
 #if CROWN_CAN_RELOAD
 	_data.material_resource[inst.i] = _data.material_resource[last];
+	_data.geometry_name[inst.i] = _data.geometry_name[last];
 #endif
 
 	hash_map::set(_map, last_u, inst.i);
@@ -2069,6 +2100,7 @@ void RenderWorld::MeshManager::swap(u32 inst_a, u32 inst_b)
 	exchange(_data.prev_flags[inst_a], _data.prev_flags[inst_b]);
 #if CROWN_CAN_RELOAD
 	exchange(_data.material_resource[inst_a], _data.material_resource[inst_b]);
+	exchange(_data.geometry_name[inst_a], _data.geometry_name[inst_b]);
 #endif
 
 	hash_map::set(_map, unit_a, inst_b);
@@ -2091,6 +2123,9 @@ void RenderWorld::MeshManager::set_geometry(MeshId mesh, const MeshResource *mr,
 	_data.mesh[mesh.i].ibh = mg->index_buffer;
 	_data.obb[mesh.i]      = mg->obb;
 	_data.sphere[mesh.i]   = mg->sphere;
+#if CROWN_CAN_RELOAD
+	_data.geometry_name[mesh.i] = geometry;
+#endif
 }
 
 MeshId RenderWorld::MeshManager::mesh(UnitId unit)
