@@ -3409,9 +3409,10 @@ public class LevelEditorApplication : Gtk.Application
 			, Gtk.ResponseType.OK
 			, null
 			);
+		dg.set_default_response(Gtk.ResponseType.OK);
 
 		InputString sb = new InputString();
-		sb.value_changed.connect(() => { dg.response(Gtk.ResponseType.OK); });
+		sb._entry.activates_default = true;
 		dg.get_content_area().add(sb);
 
 		Gtk.Entry? skeleton_entry = null;
@@ -3425,7 +3426,7 @@ public class LevelEditorApplication : Gtk.Application
 
 		dg.response.connect((response_id) => {
 			if (response_id == Gtk.ResponseType.OK) {
-				string final_name = sb.value.strip();
+				string final_name = sb._entry.text.strip();
 				if (final_name != "") {
 					GLib.Variant? new_param = null;
 
@@ -3458,14 +3459,15 @@ public class LevelEditorApplication : Gtk.Application
 			, Gtk.ResponseType.OK
 			, null
 			);
+		dg.set_default_response(Gtk.ResponseType.OK);
 
 		InputString sb = new InputString();
-		sb.value_changed.connect(() => { dg.response(Gtk.ResponseType.OK); });
+		sb._entry.activates_default = true;
 		dg.get_content_area().add(sb);
 
 		dg.response.connect((response_id) => {
 			if (response_id == Gtk.ResponseType.OK) {
-				string final_name = sb.value.strip();
+				string final_name = sb._entry.text.strip();
 				if (final_name != "") {
 					GLib.Variant? new_param = new GLib.Variant.tuple({parent_dir, final_name});
 					on_create_resource(new_param, "<folder>", 2);
